@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — SkillNest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /*
+    ══════════════════════════════════════════
+    IMAGE SIZE REFERENCE
+    ══════════════════════════════════════════
+    images/logo.png              →  34×34px   sidebar logo mark
+    images/ai-course.jpg         →  400×220px course card thumbnail (AI/ML)
+    images/web-course.jpg        →  400×220px course card thumbnail (Web Dev)
+    images/editing-course.jpg    →  400×220px course card thumbnail (Video)
+    images/instructor-priya.jpg  →  36×36px   activity feed instructor avatar
+    images/reviewer-arjun.jpg    →  38×38px   user profile avatar in sidebar
+    ══════════════════════════════════════════
+    */
+
+    :root {
+      --ink:          #0D0D0D;
+      --ink-soft:     #3A3A3A;
+      --ink-muted:    #7A7A8A;
+      --paper:        #F5F4FB;
+      --paper-2:      #EEEDF8;
+      --paper-3:      #E4E2F5;
+      --surface:      #FFFFFF;
+      --brand:        #2D6BE4;
+      --brand-2:      #1A50C0;
+      --brand-light:  rgba(45,107,228,.09);
+      --accent:       #FF6B35;
+      --gold:         #F5C518;
+      --green:        #22C55E;
+      --green-bg:     rgba(34,197,94,.1);
+      --purple:       #7C3AED;
+      --purple-bg:    rgba(124,58,237,.1);
+      --border:       #E4E2F5;
+      --radius-sm:    8px;
+      --radius-md:    14px;
+      --radius-lg:    20px;
+      --font-display: 'Clash Display', sans-serif;
+      --font-body:    'Satoshi', sans-serif;
+      --sidebar-w:    248px;
+      --topbar-h:     64px;
+      --shadow-card:  0 1px 4px rgba(45,107,228,.07), 0 0 0 1px rgba(45,107,228,.06);
+      --shadow-md:    0 4px 20px rgba(45,107,228,.1), 0 0 0 1px rgba(45,107,228,.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font-body); cursor: pointer; }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 100; overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 20px 18px 16px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    /* images/logo.png | 34×34px | SkillNest square brand logo */
+    .sidebar-logo-img {
+      width: 34px; height: 34px;
+      border-radius: 9px; object-fit: cover; display: block; flex-shrink: 0;
+    }
+    .sidebar-logo-text {
+      font-family: var(--font-display);
+      font-weight: 700; font-size: 18px; color: var(--ink); letter-spacing: -.4px;
+    }
+    .sidebar-logo-sub { font-size: 10.5px; color: var(--ink-muted); margin-top: 1px; }
+
+    .sidebar-nav { padding: 12px 10px; flex: 1; }
+    .nav-group-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .1em; color: var(--ink-muted);
+      padding: 10px 10px 4px;
+    }
+    .nav-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 11px; border-radius: var(--radius-sm);
+      font-size: 13.5px; color: var(--ink-muted);
+      transition: background .15s, color .15s;
+      margin-bottom: 1px; position: relative;
+    }
+    .nav-link:hover { background: var(--paper); color: var(--ink); }
+    .nav-link.active {
+      background: var(--brand-light); color: var(--brand); font-weight: 600;
+    }
+    .nav-link svg { width: 17px; height: 17px; flex-shrink: 0; opacity: .7; }
+    .nav-link.active svg { opacity: 1; }
+    .nav-badge {
+      margin-left: auto; background: var(--brand); color: #fff;
+      font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px;
+    }
+    .nav-badge-dot {
+      margin-left: auto; width: 7px; height: 7px;
+      border-radius: 50%; background: var(--accent); flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 10px; border-top: 1px solid var(--border); flex-shrink: 0;
+    }
+    .sidebar-user {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 10px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: background .15s;
+    }
+    .sidebar-user:hover { background: var(--paper); }
+    /* images/reviewer-arjun.jpg | 36×36px | logged-in user profile photo */
+    .sidebar-avatar-img {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: cover; object-position: center top;
+      display: block; flex-shrink: 0;
+      border: 2px solid var(--border);
+    }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .sidebar-user-plan {
+      font-size: 11px; color: var(--ink-muted); display: flex; align-items: center; gap: 4px;
+    }
+    .plan-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+
+    /* ══ TOPBAR ══ */
+    .topbar {
+      position: fixed; top: 0;
+      left: var(--sidebar-w); right: 0;
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 28px; gap: 14px;
+      z-index: 90;
+    }
+    .topbar-title {
+      font-family: var(--font-display);
+      font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -.4px;
+    }
+    .topbar-spacer { flex: 1; }
+    .topbar-search { position: relative; flex: 0 1 280px; }
+    .topbar-search svg {
+      position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+      color: var(--ink-muted); width: 15px; height: 15px;
+    }
+    .topbar-search input {
+      width: 100%; padding: 8px 12px 8px 32px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 13.5px; color: var(--ink);
+      background: var(--paper); outline: none; transition: border-color .15s;
+    }
+    .topbar-search input:focus { border-color: var(--brand); background: #fff; }
+    .topbar-search input::placeholder { color: var(--ink-muted); }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; }
+    .topbar-icon-btn {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--ink-muted); transition: all .15s;
+      position: relative;
+    }
+    .topbar-icon-btn:hover { background: var(--paper); color: var(--ink); border-color: var(--brand); }
+    .topbar-icon-btn svg { width: 17px; height: 17px; }
+    .notif-dot::after {
+      content: ''; position: absolute; top: 7px; right: 7px;
+      width: 7px; height: 7px; background: var(--brand);
+      border-radius: 50%; border: 2px solid var(--surface);
+    }
+    .btn-add-course {
+      display: flex; align-items: center; gap: 7px;
+      padding: 8px 16px; background: var(--brand); color: #fff;
+      border: none; border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 13.5px; font-weight: 600;
+      cursor: pointer; transition: all .15s;
+    }
+    .btn-add-course:hover { background: var(--brand-2); transform: translateY(-1px); }
+    .btn-add-course svg { width: 15px; height: 15px; }
+
+    /* ══ MAIN CONTENT ══ */
+    .main-content {
+      margin-left: var(--sidebar-w);
+      padding-top: var(--topbar-h);
+      min-height: 100vh;
+    }
+    .page-inner { padding: 28px 28px 48px; }
+
+    /* ══ WELCOME BANNER ══ */
+    .welcome-banner {
+      background: linear-gradient(135deg, #1a3fa8 0%, #2d6be4 55%, #4d8bf5 100%);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; position: relative; overflow: hidden;
+    }
+    .welcome-banner::before {
+      content: '';
+      position: absolute; top: -40px; right: 80px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+    .welcome-banner::after {
+      content: '';
+      position: absolute; bottom: -60px; right: -20px;
+      width: 180px; height: 180px; border-radius: 50%;
+      background: rgba(255,255,255,.04);
+    }
+    .welcome-left { position: relative; z-index: 1; }
+    .welcome-greeting {
+      font-size: 13px; color: rgba(255,255,255,.7); margin-bottom: 5px;
+    }
+    .welcome-name {
+      font-family: var(--font-display);
+      font-size: 24px; font-weight: 700; color: #fff;
+      letter-spacing: -.5px; margin-bottom: 8px;
+    }
+    .welcome-sub { font-size: 14px; color: rgba(255,255,255,.7); }
+    .welcome-streak {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: var(--radius-md);
+      padding: 14px 20px; position: relative; z-index: 1;
+    }
+    .streak-flame {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: rgba(245,197,24,.2);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .streak-flame svg { width: 20px; height: 20px; color: var(--gold); }
+    .streak-num {
+      font-family: var(--font-display);
+      font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -1px;
+    }
+    .streak-label { font-size: 12px; color: rgba(255,255,255,.65); }
+
+    /* ══ STATS ROW ══ */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 14px; margin-bottom: 26px;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 18px 20px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .stat-header { display: flex; align-items: center; justify-content: space-between; }
+    .stat-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .stat-icon svg { width: 18px; height: 18px; }
+    .stat-icon.blue   { background: var(--brand-light); color: var(--brand); }
+    .stat-icon.green  { background: var(--green-bg);    color: var(--green); }
+    .stat-icon.gold   { background: rgba(245,197,24,.12); color: #d97706; }
+    .stat-icon.purple { background: var(--purple-bg);   color: var(--purple); }
+    .stat-delta {
+      font-size: 11.5px; font-weight: 500; padding: 2px 7px;
+      border-radius: 6px;
+    }
+    .delta-up   { background: var(--green-bg);  color: #16a34a; }
+    .delta-down { background: rgba(239,68,68,.1); color: #dc2626; }
+    .delta-same { background: var(--paper-2); color: var(--ink-muted); }
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 30px; font-weight: 700; color: var(--ink); letter-spacing: -1px;
+    }
+    .stat-label { font-size: 12.5px; color: var(--ink-muted); }
+
+    /* ══ GRID: main + side ══ */
+    .content-grid {
+      display: grid; grid-template-columns: 1fr 320px; gap: 20px;
+    }
+
+    /* ══ SECTION HEADERS ══ */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 16px; font-weight: 700; color: var(--ink); letter-spacing: -.3px;
+    }
+    .btn-view-all {
+      font-size: 13px; color: var(--brand); font-weight: 500;
+      background: none; border: none; cursor: pointer; transition: opacity .15s;
+    }
+    .btn-view-all:hover { opacity: .75; }
+
+    /* ══ CONTINUE LEARNING ══ */
+    .courses-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+    .course-row {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: flex; gap: 0; overflow: hidden;
+      transition: box-shadow .2s, border-color .2s;
+      cursor: pointer;
+    }
+    .course-row:hover { box-shadow: var(--shadow-md); border-color: transparent; }
+
+    /* course card thumbnail: 400×220px cropped to this strip */
+    .course-row-thumb {
+      width: 140px; min-height: 100px;
+      flex-shrink: 0; position: relative; overflow: hidden;
+      background: var(--paper-2);
+    }
+    .course-row-thumb-img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+      display: block; transition: transform .3s;
+    }
+    .course-row:hover .course-row-thumb-img { transform: scale(1.05); }
+
+    .course-row-body {
+      flex: 1; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 6px; min-width: 0;
+    }
+    .course-row-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+    .course-tag {
+      font-size: 10px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .04em; padding: 2px 7px; border-radius: 5px;
+    }
+    .tag-ai     { background: rgba(124,58,237,.1); color: var(--purple); }
+    .tag-web    { background: var(--brand-light);  color: var(--brand); }
+    .tag-design { background: rgba(255,107,53,.1); color: #c0440e; }
+    .tag-data   { background: var(--green-bg);     color: #15803d; }
+
+    .course-row-title {
+      font-family: var(--font-display);
+      font-size: 14.5px; font-weight: 600; color: var(--ink); line-height: 1.35;
+    }
+    .course-row-meta {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; color: var(--ink-muted);
+    }
+    .stars-gold { color: var(--gold); font-size: 11px; }
+    .course-row-progress { margin-top: 4px; }
+    .progress-header {
+      display: flex; justify-content: space-between;
+      font-size: 11.5px; color: var(--ink-muted); margin-bottom: 5px;
+    }
+    .progress-bar {
+      height: 5px; background: var(--paper-2);
+      border-radius: 3px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--brand), #4d8bf5);
+      transition: width .4s;
+    }
+    .course-row-actions {
+      padding: 14px 16px 14px 0;
+      display: flex; flex-direction: column;
+      align-items: flex-end; justify-content: space-between;
+      flex-shrink: 0; gap: 8px;
+    }
+    .btn-continue {
+      padding: 7px 16px; background: var(--brand); color: #fff;
+      border: none; border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background .15s; white-space: nowrap;
+    }
+    .btn-continue:hover { background: var(--brand-2); }
+    .course-lessons { font-size: 11.5px; color: var(--ink-muted); text-align: right; }
+
+    /* ══ RECOMMENDED ══ */
+    .recommended-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+      margin-bottom: 28px;
+    }
+    .rec-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); overflow: hidden;
+      cursor: pointer; transition: all .2s;
+    }
+    .rec-card:hover { box-shadow: var(--shadow-md); border-color: transparent; transform: translateY(-2px); }
+    /* recommended card thumb: same course images at 400×220px */
+    .rec-thumb {
+      height: 110px; overflow: hidden; background: var(--paper-2);
+      position: relative;
+    }
+    .rec-thumb-img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center;
+      display: block; transition: transform .3s;
+    }
+    .rec-card:hover .rec-thumb-img { transform: scale(1.05); }
+    .rec-badge {
+      position: absolute; top: 8px; left: 8px;
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 5px;
+    }
+    .badge-new     { background: var(--accent); color: #fff; }
+    .badge-popular { background: var(--gold); color: var(--ink); }
+    .badge-free    { background: var(--green); color: #fff; }
+    .rec-body { padding: 12px 14px; }
+    .rec-title {
+      font-size: 13px; font-weight: 600; color: var(--ink);
+      line-height: 1.4; margin-bottom: 6px;
+    }
+    .rec-meta { font-size: 11.5px; color: var(--ink-muted); display: flex; gap: 8px; }
+    .rec-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px; border-top: 1px solid var(--border);
+    }
+    .rec-price {
+      font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--ink);
+    }
+    .rec-price.free { color: var(--green); }
+    .btn-rec {
+      font-size: 12px; font-weight: 600; color: var(--brand);
+      background: var(--brand-light); border: none;
+      padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all .15s;
+    }
+    .btn-rec:hover { background: var(--brand); color: #fff; }
+
+    /* ══ RIGHT SIDEBAR ══ */
+    .right-sidebar { display: flex; flex-direction: column; gap: 18px; }
+
+    /* Panel card */
+    .panel-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 18px;
+    }
+    .panel-card-title {
+      font-family: var(--font-display);
+      font-size: 14px; font-weight: 700; color: var(--ink);
+      letter-spacing: -.3px; margin-bottom: 14px;
+    }
+
+    /* Skill progress */
+    .skill-item { margin-bottom: 13px; }
+    .skill-item:last-child { margin-bottom: 0; }
+    .skill-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+    .skill-name { font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+    .skill-pct  { font-size: 12px; font-weight: 600; color: var(--brand); }
+    .skill-bar  { height: 5px; background: var(--paper-2); border-radius: 3px; overflow: hidden; }
+    .skill-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--brand), #4d8bf5); }
+
+    /* Activity feed */
+    .activity-item {
+      display: flex; gap: 11px; align-items: flex-start;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .activity-icon {
+      width: 32px; height: 32px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .activity-icon svg { width: 15px; height: 15px; }
+    .act-blue   { background: var(--brand-light); color: var(--brand); }
+    .act-green  { background: var(--green-bg);    color: var(--green); }
+    .act-gold   { background: rgba(245,197,24,.15); color: #d97706; }
+    .act-purple { background: var(--purple-bg);   color: var(--purple); }
+    .activity-text { flex: 1; min-width: 0; }
+    .act-title  { font-size: 13px; font-weight: 500; color: var(--ink-soft); line-height: 1.4; }
+    .act-time   { font-size: 11.5px; color: var(--ink-muted); margin-top: 2px; }
+
+    /* Certificates */
+    .cert-item {
+      display: flex; gap: 11px; align-items: center;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .cert-item:last-child { border-bottom: none; }
+    .cert-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--brand), #1a3fa8);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .cert-icon svg { width: 18px; height: 18px; color: #fff; }
+    .cert-name  { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.35; }
+    .cert-date  { font-size: 11.5px; color: var(--ink-muted); margin-top: 1px; }
+    .btn-cert {
+      margin-left: auto; padding: 5px 11px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: none; font-family: var(--font-body); font-size: 11.5px;
+      font-weight: 500; color: var(--brand); cursor: pointer; transition: all .15s;
+      white-space: nowrap;
+    }
+    .btn-cert:hover { background: var(--brand-light); border-color: var(--brand); }
+
+    /* Study goal ring */
+    .goal-card {
+      background: linear-gradient(135deg, #1a3fa8, #2d6be4);
+      border-radius: var(--radius-md); padding: 20px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .goal-ring {
+      position: relative; flex-shrink: 0;
+      width: 72px; height: 72px;
+    }
+    .goal-ring svg { width: 72px; height: 72px; transform: rotate(-90deg); }
+    .ring-bg   { fill: none; stroke: rgba(255,255,255,.15); stroke-width: 6; }
+    .ring-fill {
+      fill: none; stroke: #fff; stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 188.5;
+      stroke-dashoffset: 56.5; /* 70% filled: 188.5 * (1-0.7) */
+      transition: stroke-dashoffset 1s;
+    }
+    .ring-label {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-size: 16px; font-weight: 700; color: #fff;
+    }
+    .goal-info {}
+    .goal-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.9); margin-bottom: 4px; }
+    .goal-sub   { font-size: 12px; color: rgba(255,255,255,.6); margin-bottom: 10px; }
+    .goal-bar   { height: 4px; background: rgba(255,255,255,.2); border-radius: 2px; overflow: hidden; }
+    .goal-bar-fill { height: 100%; background: #fff; border-radius: 2px; width: 70%; }
+
+    /* Leaderboard */
+    .leaderboard-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+    }
+    .leaderboard-item:last-child { border-bottom: none; }
+    .lb-rank {
+      width: 22px; font-size: 12px; font-weight: 700;
+      color: var(--ink-muted); text-align: center; flex-shrink: 0;
+    }
+    .lb-rank.gold-rank   { color: var(--gold); }
+    .lb-rank.silver-rank { color: #94a3b8; }
+    .lb-rank.bronze-rank { color: #b87333; }
+    .lb-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--paper-2); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--ink-soft);
+    }
+    .lb-avatar.you { background: var(--brand-light); color: var(--brand); border: 2px solid var(--brand); }
+    .lb-name  { flex: 1; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+    .lb-name.you { color: var(--brand); font-weight: 600; }
+    .lb-pts   { font-size: 12px; font-weight: 600; color: var(--ink-muted); }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1200px) {
+      .content-grid  { grid-template-columns: 1fr; }
+      .right-sidebar { display: grid; grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 960px) {
+      :root { --sidebar-w: 0px; }
+      .sidebar { transform: translateX(-100%); }
+      .topbar  { left: 0; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .page-inner { padding: 20px 16px 40px; }
+      .stats-row  { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .recommended-grid { grid-template-columns: 1fr; }
+      .course-row-thumb { width: 100px; }
+      .right-sidebar { grid-template-columns: 1fr; }
+      .welcome-streak { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <!--
+        images/logo.png
+        34×34px — SkillNest brand logo mark
+      -->
+      <img src="images/logo.png" alt="SkillNest" class="sidebar-logo-img" width="34" height="34" />
+      <div>
+        <div class="sidebar-logo-text">SkillNest</div>
+        <div class="sidebar-logo-sub">Learn · Grow · Nest</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Main</div>
+      <a href="dashboard.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="explore.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        Explore
+        <span class="nav-badge">New</span>
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        My Courses
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Saved
+        <span class="nav-badge-dot"></span>
+      </a>
+
+      <div class="nav-group-label">Create</div>
+      <a href="add-course.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Add Course
+      </a>
+
+      <div class="nav-group-label">Account</div>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/></svg>
+        Profile
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </a>
+      <a href="login.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log out
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="#" class="sidebar-user">
+        <!--
+          images/reviewer-arjun.jpg
+          36×36px — logged-in user profile photo (Arjun Kumar)
+        -->
+        <img
+          src="images/reviewer-arjun.jpg"
+          alt="Arjun Kumar"
+          class="sidebar-avatar-img"
+          width="36"
+          height="36"
+        />
+        <div>
+          <div class="sidebar-user-name">Arjun Kumar</div>
+          <div class="sidebar-user-plan"><span class="plan-dot"></span>Pro member</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ══ TOPBAR ══ -->
+  <header class="topbar">
+    <div class="topbar-title">Dashboard</div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search courses, skills..." />
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-icon-btn notif-dot" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </button>
+      <button class="topbar-icon-btn" title="Messages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <a href="add-course.html">
+        <button class="btn-add-course">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Course
+        </button>
+      </a>
+    </div>
+  </header>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main-content">
+    <div class="page-inner">
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner">
+        <div class="welcome-left">
+          <div class="welcome-greeting">Friday, 15 May 2026</div>
+          <div class="welcome-name">Welcome back, Arjun!</div>
+          <div class="welcome-sub">You're 62% through your Python ML course. Keep it up!</div>
+        </div>
+        <div class="welcome-streak">
+          <div class="streak-flame">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C9.5 5.5 8 8 8 11a4 4 0 0 0 8 0c0-1-.3-2-.8-2.8C14.5 9.8 14 11 12 12c-1.5-2 .5-7 0-10z"/><path d="M12 14c-1.1 0-2-.9-2-2 0-.8.4-1.5 1-2 .3.7.8 1.3 1.5 1.7.3-.5.5-1.1.5-1.7.6.5 1 1.2 1 2 0 1.1-.9 2-2 2z"/></svg>
+          </div>
+          <div>
+            <div class="streak-num">14</div>
+            <div class="streak-label">day streak</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+            <span class="stat-delta delta-up">+3 this month</span>
+          </div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Courses enrolled</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <span class="stat-delta delta-up">+1 this week</span>
+          </div>
+          <div class="stat-value">7</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon gold">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <span class="stat-delta delta-up">+12h this week</span>
+          </div>
+          <div class="stat-value">84</div>
+          <div class="stat-label">Hours learned</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">
+            <div class="stat-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+            </div>
+            <span class="stat-delta delta-same">All time</span>
+          </div>
+          <div class="stat-value">4</div>
+          <div class="stat-label">Certificates earned</div>
+        </div>
+      </div>
+
+      <!-- Content Grid -->
+      <div class="content-grid">
+
+        <!-- LEFT COLUMN -->
+        <div>
+
+          <!-- Continue Learning -->
+          <div class="section-header">
+            <div class="section-title">Continue Learning</div>
+            <button class="btn-view-all" onclick="window.location='explore.html'">View all courses →</button>
+          </div>
+
+          <div class="courses-list">
+
+            <!-- Course 1 -->
+            <div class="course-row" onclick="window.location='course.html'">
+              <div class="course-row-thumb">
+                <!--
+                  images/ai-course.jpg
+                  400×220px — AI/ML course banner
+                  Displayed as 140px wide strip, cropped from center
+                -->
+                <img
+                  src="images/ai-course.jpg"
+                  alt="Complete Machine Learning and AI Bootcamp course thumbnail"
+                  class="course-row-thumb-img"
+                  width="400"
+                  height="220"
+                />
+              </div>
+              <div class="course-row-body">
+                <div class="course-row-tags">
+                  <span class="course-tag tag-ai">AI</span>
+                  <span class="course-tag tag-data">Data</span>
+                </div>
+                <div class="course-row-title">Complete Machine Learning &amp; AI Bootcamp 2025</div>
+                <div class="course-row-meta">
+                  <span class="stars-gold">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span>4.9</span>
+                  <span>·</span>
+                  <span>Dr. Priya Sharma</span>
+                  <span>·</span>
+                  <span>48 hrs</span>
+                </div>
+                <div class="course-row-progress">
+                  <div class="progress-header"><span>Progress</span><span>62%</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:62%"></div></div>
+                </div>
+              </div>
+              <div class="course-row-actions">
+                <button class="btn-continue">Continue →</button>
+                <div class="course-lessons">Lesson 29 of 48</div>
+              </div>
+            </div>
+
+            <!-- Course 2 -->
+            <div class="course-row" onclick="window.location='course.html'">
+              <div class="course-row-thumb">
+                <!--
+                  images/web-course.jpg
+                  400×220px — Web Development course banner
+                -->
+                <img
+                  src="images/web-course.jpg"
+                  alt="Full-Stack Web Development with React and Node.js course thumbnail"
+                  class="course-row-thumb-img"
+                  width="400"
+                  height="220"
+                />
+              </div>
+              <div class="course-row-body">
+                <div class="course-row-tags">
+                  <span class="course-tag tag-web">React</span>
+                  <span class="course-tag tag-web">Node.js</span>
+                </div>
+                <div class="course-row-title">Full-Stack Web Development with React &amp; Node.js</div>
+                <div class="course-row-meta">
+                  <span class="stars-gold">&#9733;&#9733;&#9733;&#9733;</span>
+                  <span>4.7</span>
+                  <span>·</span>
+                  <span>Rahul Mehta</span>
+                  <span>·</span>
+                  <span>62 hrs</span>
+                </div>
+                <div class="course-row-progress">
+                  <div class="progress-header"><span>Progress</span><span>41%</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:41%"></div></div>
+                </div>
+              </div>
+              <div class="course-row-actions">
+                <button class="btn-continue">Continue →</button>
+                <div class="course-lessons">Lesson 24 of 58</div>
+              </div>
+            </div>
+
+            <!-- Course 3 -->
+            <div class="course-row" onclick="window.location='course.html'">
+              <div class="course-row-thumb">
+                <!--
+                  images/editing-course.jpg
+                  400×220px — Video Editing course banner
+                -->
+                <img
+                  src="images/editing-course.jpg"
+                  alt="Video Editing Masterclass course thumbnail"
+                  class="course-row-thumb-img"
+                  width="400"
+                  height="220"
+                />
+              </div>
+              <div class="course-row-body">
+                <div class="course-row-tags">
+                  <span class="course-tag tag-design">Design</span>
+                  <span class="course-tag tag-design">Video</span>
+                </div>
+                <div class="course-row-title">Video Editing Masterclass: Premiere Pro to Final Cut</div>
+                <div class="course-row-meta">
+                  <span class="stars-gold">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span>4.8</span>
+                  <span>·</span>
+                  <span>Anjali Kapoor</span>
+                  <span>·</span>
+                  <span>35 hrs</span>
+                </div>
+                <div class="course-row-progress">
+                  <div class="progress-header"><span>Progress</span><span>22%</span></div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div>
+                </div>
+              </div>
+              <div class="course-row-actions">
+                <button class="btn-continue">Continue →</button>
+                <div class="course-lessons">Lesson 8 of 35</div>
+              </div>
+            </div>
+
+          </div><!-- /courses-list -->
+
+          <!-- Recommended -->
+          <div class="section-header">
+            <div class="section-title">Recommended for You</div>
+            <button class="btn-view-all" onclick="window.location='explore.html'">Explore all →</button>
+          </div>
+
+          <div class="recommended-grid">
+            <div class="rec-card" onclick="window.location='course.html'">
+              <div class="rec-thumb">
+                <!--
+                  images/web-course.jpg
+                  400×220px — reused as recommended card thumb
+                -->
+                <img src="images/web-course.jpg" alt="Flutter and Dart mobile development course" class="rec-thumb-img" width="400" height="220" />
+                <span class="rec-badge badge-new">New</span>
+              </div>
+              <div class="rec-body">
+                <div class="rec-title">Flutter &amp; Dart — Build iOS &amp; Android Apps</div>
+                <div class="rec-meta">
+                  <span class="stars-gold" style="font-size:11px">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  <span>4.9 · 5,300 students</span>
+                </div>
+              </div>
+              <div class="rec-footer">
+                <div class="rec-price">&#8377;1,799</div>
+                <button class="btn-rec">Enroll</button>
+              </div>
+            </div>
+
+            <div class="rec-card" onclick="window.location='course.html'">
+              <div class="rec-thumb">
+                <!--
+                  images/ai-course.jpg
+                  400×220px — reused as recommended card thumb
+                -->
+                <img src="images/ai-course.jpg" alt="AWS Cloud Practitioner course" class="rec-thumb-img" width="400" height="220" />
+                <span class="rec-badge badge-popular">Popular</span>
+              </div>
+              <div class="rec-body">
+                <div class="rec-title">AWS Cloud Practitioner + Solutions Architect</div>
+                <div class="rec-meta">
+                  <span class="stars-gold" style="font-size:11px">&#9733;&#9733;&#9733;&#9733;</span>
+                  <span>4.7 · 4,100 students</span>
+                </div>
+              </div>
+              <div class="rec-footer">
+                <div class="rec-price">&#8377;2,199</div>
+                <button class="btn-rec">Enroll</button>
+              </div>
+            </div>
+
+            <div class="rec-card" onclick="window.location='course.html'">
+              <div class="rec-thumb">
+                <!--
+                  images/editing-course.jpg
+                  400×220px — reused as recommended card thumb
+                -->
+                <img src="images/editing-course.jpg" alt="Data Analysis with Python and Pandas course" class="rec-thumb-img" width="400" height="220" />
+                <span class="rec-badge badge-free">Free</span>
+              </div>
+              <div class="rec-body">
+                <div class="rec-title">Data Analysis with Python &amp; Pandas</div>
+                <div class="rec-meta">
+                  <span class="stars-gold" style="font-size:11px">&#9733;&#9733;&#9733;&#9733;</span>
+                  <span>4.6 · 14,200 students</span>
+                </div>
+              </div>
+              <div class="rec-footer">
+                <div class="rec-price free">Free</div>
+                <button class="btn-rec" style="background:var(--green-bg);color:var(--green)">Enroll</button>
+              </div>
+            </div>
+
+            <div class="rec-card" onclick="window.location='course.html'">
+              <div class="rec-thumb">
+                <!--
+                  images/web-course.jpg
+                  400×220px — reused as recommended card thumb
+                -->
+                <img src="images/web-course.jpg" alt="Digital Marketing and SEO course" class="rec-thumb-img" width="400" height="220" />
+              </div>
+              <div class="rec-body">
+                <div class="rec-title">Digital Marketing &amp; SEO: Complete 2025 Guide</div>
+                <div class="rec-meta">
+                  <span class="stars-gold" style="font-size:11px">&#9733;&#9733;&#9733;&#9733;</span>
+                  <span>4.5 · 8,900 students</span>
+                </div>
+              </div>
+              <div class="rec-footer">
+                <div class="rec-price">&#8377;799</div>
+                <button class="btn-rec">Enroll</button>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /left column -->
+
+        <!-- RIGHT SIDEBAR -->
+        <div class="right-sidebar">
+
+          <!-- Weekly Goal -->
+          <div class="goal-card">
+            <div class="goal-ring">
+              <svg viewBox="0 0 72 72">
+                <circle class="ring-bg"   cx="36" cy="36" r="30"/>
+                <circle class="ring-fill" cx="36" cy="36" r="30"/>
+              </svg>
+              <div class="ring-label">70%</div>
+            </div>
+            <div class="goal-info">
+              <div class="goal-title">Weekly Study Goal</div>
+              <div class="goal-sub">7 of 10 hours completed</div>
+              <div class="goal-bar"><div class="goal-bar-fill"></div></div>
+            </div>
+          </div>
+
+          <!-- Top Skills -->
+          <div class="panel-card">
+            <div class="panel-card-title">Top Skills</div>
+            <div class="skill-item">
+              <div class="skill-header"><span class="skill-name">Python</span><span class="skill-pct">88%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="width:88%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-header"><span class="skill-name">JavaScript</span><span class="skill-pct">74%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="width:74%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-header"><span class="skill-name">React</span><span class="skill-pct">56%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="width:56%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-header"><span class="skill-name">UI Design</span><span class="skill-pct">43%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="width:43%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-header"><span class="skill-name">SQL</span><span class="skill-pct">38%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="width:38%"></div></div>
+            </div>
+            <div class="skill-item">
+              <div class="skill-header"><span class="skill-name">Docker</span><span class="skill-pct">21%</span></div>
+              <div class="skill-bar"><div class="skill-fill" style="width:21%"></div></div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="panel-card">
+            <div class="panel-card-title">Recent Activity</div>
+            <div class="activity-item">
+              <div class="activity-icon act-blue">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+              <div class="activity-text">
+                <div class="act-title">Watched "Neural Networks Basics"</div>
+                <div class="act-time">2 hours ago · Python ML</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon act-green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <div class="activity-text">
+                <div class="act-title">Completed "React Hooks Deep Dive"</div>
+                <div class="act-time">Yesterday · Web Dev</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon act-gold">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div class="activity-text">
+                <div class="act-title">Saved "Advanced Figma Prototyping"</div>
+                <div class="act-time">2 days ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon act-purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+              </div>
+              <div class="activity-text">
+                <div class="act-title">Earned "JavaScript ES2024" certificate</div>
+                <div class="act-time">3 days ago</div>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-icon act-blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+              <div class="activity-text">
+                <div class="act-title">Scored 95% on Python Quiz</div>
+                <div class="act-time">4 days ago</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Certificates -->
+          <div class="panel-card">
+            <div class="panel-card-title">My Certificates</div>
+            <div class="cert-item">
+              <div class="cert-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+              <div>
+                <div class="cert-name">JavaScript ES2024</div>
+                <div class="cert-date">Issued May 2025</div>
+              </div>
+              <button class="btn-cert">View</button>
+            </div>
+            <div class="cert-item">
+              <div class="cert-icon" style="background:linear-gradient(135deg,#7C3AED,#5b21b6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+              <div>
+                <div class="cert-name">Python Fundamentals</div>
+                <div class="cert-date">Issued Mar 2025</div>
+              </div>
+              <button class="btn-cert">View</button>
+            </div>
+            <div class="cert-item">
+              <div class="cert-icon" style="background:linear-gradient(135deg,#059669,#10b981)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+              <div>
+                <div class="cert-name">HTML &amp; CSS Mastery</div>
+                <div class="cert-date">Issued Jan 2025</div>
+              </div>
+              <button class="btn-cert">View</button>
+            </div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div class="panel-card">
+            <div class="panel-card-title">Weekly Leaderboard</div>
+            <div class="leaderboard-item">
+              <div class="lb-rank gold-rank">1</div>
+              <div class="lb-avatar">SR</div>
+              <div class="lb-name">Sneha Rao</div>
+              <div class="lb-pts">1,840 pts</div>
+            </div>
+            <div class="leaderboard-item">
+              <div class="lb-rank silver-rank">2</div>
+              <div class="lb-avatar">VM</div>
+              <div class="lb-name">Vikram M.</div>
+              <div class="lb-pts">1,620 pts</div>
+            </div>
+            <div class="leaderboard-item">
+              <div class="lb-rank bronze-rank">3</div>
+              <div class="lb-avatar you">AK</div>
+              <div class="lb-name you">You</div>
+              <div class="lb-pts" style="color:var(--brand)">1,490 pts</div>
+            </div>
+            <div class="leaderboard-item">
+              <div class="lb-rank">4</div>
+              <div class="lb-avatar">PJ</div>
+              <div class="lb-name">Pooja J.</div>
+              <div class="lb-pts">1,310 pts</div>
+            </div>
+            <div class="leaderboard-item">
+              <div class="lb-rank">5</div>
+              <div class="lb-avatar">MV</div>
+              <div class="lb-name">Meera V.</div>
+              <div class="lb-pts">1,200 pts</div>
+            </div>
+          </div>
+
+        </div><!-- /right-sidebar -->
+      </div><!-- /content-grid -->
+    </div><!-- /page-inner -->
+  </main>
+
+  <script>
+    // Active nav highlight
+    const current = window.location.pathname.split('/').pop() || 'dashboard.html';
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.getAttribute('href') === current) link.classList.add('active');
+    });
+
+    // Animate progress bars on load
+    window.addEventListener('load', () => {
+      document.querySelectorAll('.progress-fill, .skill-fill, .goal-bar-fill').forEach(el => {
+        const w = el.style.width;
+        el.style.width = '0';
+        setTimeout(() => { el.style.transition = 'width 1s ease'; el.style.width = w; }, 200);
+      });
+    });
+
+    // Topbar search
+    document.querySelector('.topbar-search input').addEventListener('keydown', e => {
+      if (e.key === 'Enter' && e.target.value.trim()) {
+        window.location.href = 'explore.html';
+      }
+    });
+  </script>
+</body>
+</html>
