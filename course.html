@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Details — SkillNest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink:#0D0D0D;--ink-soft:#3A3A3A;--ink-muted:#7A7A8A;
+      --paper:#FAF9F7;--paper-2:#F2F1EE;--paper-3:#E8E6E0;
+      --brand:#2D6BE4;--brand-2:#1A50C0;--brand-light:rgba(45,107,228,.09);
+      --accent:#FF6B35;--gold:#F5C518;--green:#22C55E;--border:#E2E0DA;
+      --radius-sm:8px;--radius-md:14px;--radius-lg:22px;
+      --font-display:'Clash Display',sans-serif;--font-body:'Satoshi',sans-serif;
+      --nav-h:68px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    button{font-family:var(--font-body);cursor:pointer}
+
+    /*
+    ══════════════════════════════════════════
+    IMAGE SIZE REFERENCE — ALL <img> IN FILE
+    ══════════════════════════════════════════
+    images/logo.png              →  34×34px   nav logo mark
+    images/ai-course.jpg         →  1280×480px hero banner (wide cinematic shot of developer at laptop with ML visualisations on screen)
+    images/ai-course.jpg (card)  →  380×210px  enroll card preview thumbnail (same image, cropped 16:9)
+    images/instructor-priya.jpg  →  96×96px   instructor headshot round (also used as 36×36 in hero)
+    images/reviewer-arjun.jpg    →  40×40px   reviewer round avatar
+    images/reviewer-sneha.jpg    →  40×40px   reviewer round avatar
+    images/reviewer-vikram.jpg   →  40×40px   reviewer round avatar
+    images/web-course.jpg        →  80×60px   related course thumbnail
+    images/data-course.jpg       →  80×60px   related course thumbnail
+    images/cloud-course.jpg      →  80×60px   related course thumbnail
+    ══════════════════════════════════════════
+    */
+
+    /* Navbar */
+    .navbar{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(250,249,247,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 32px;gap:20px;z-index:200}
+    .nav-logo{display:flex;align-items:center;gap:10px}
+    .nav-logo-img{width:34px;height:34px;border-radius:9px;object-fit:cover;display:block}
+    .nav-logo-text{font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--ink)}
+    .nav-spacer{flex:1}
+    .nav-breadcrumb{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-muted);margin-left:20px}
+    .nav-breadcrumb a{color:var(--brand)}
+    .nav-breadcrumb a:hover{text-decoration:underline}
+    .nav-actions{display:flex;gap:8px}
+    .btn-nav{padding:7px 17px;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:13.5px;font-weight:500;cursor:pointer;transition:all .15s}
+    .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--border)}
+    .btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+    .btn-fill{background:var(--brand);color:#fff;border:none;font-weight:600}
+    .btn-fill:hover{background:var(--brand-2)}
+
+    /* Hero */
+    .course-hero{margin-top:var(--nav-h);background:#0a1628;position:relative;overflow:hidden}
+    .hero-banner-img{
+      width:100%;height:480px;
+      object-fit:cover;object-position:center top;
+      display:block;opacity:.35;
+    }
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,22,40,.97) 0%,rgba(10,22,40,.82) 45%,rgba(10,22,40,.32) 100%);display:flex;align-items:center}
+    .hero-inner{max-width:1200px;margin:0 auto;width:100%;padding:56px 40px;display:grid;grid-template-columns:1fr 390px;gap:48px;align-items:start}
+    .hero-breadcrumb{display:flex;align-items:center;gap:7px;font-size:12.5px;color:rgba(255,255,255,.5);margin-bottom:16px}
+    .hero-breadcrumb a{color:rgba(255,255,255,.75);transition:color .15s}
+    .hero-breadcrumb a:hover{color:#fff}
+    .hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .hero-tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:4px 10px;border-radius:6px}
+    .tag-bestseller{background:rgba(245,197,24,.2);color:#fde68a}
+    .tag-ai{background:rgba(139,92,246,.25);color:#c4b5fd}
+    .tag-level{background:rgba(34,197,94,.2);color:#86efac}
+    .hero-title{font-family:var(--font-display);font-size:clamp(24px,3.2vw,38px);font-weight:700;color:#fff;letter-spacing:-.8px;line-height:1.15;margin-bottom:14px}
+    .hero-desc{font-size:15.5px;color:rgba(255,255,255,.72);line-height:1.7;max-width:560px;margin-bottom:22px}
+    .hero-meta-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:13.5px;color:rgba(255,255,255,.65);margin-bottom:22px}
+    .stars-gold{color:var(--gold);font-size:14px}
+    .rating-bold{font-weight:700;color:#fff}
+    .hero-dot{color:rgba(255,255,255,.25)}
+    .hero-instructor-row{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+    .hero-instructor-photo{width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center top;display:block;border:2px solid rgba(255,255,255,.25);flex-shrink:0}
+    .instructor-by{font-size:12.5px;color:rgba(255,255,255,.5)}
+    .instructor-name{font-size:14px;font-weight:600;color:rgba(255,255,255,.9)}
+    .hero-badges{display:flex;gap:20px;flex-wrap:wrap}
+    .hero-badge{display:flex;align-items:center;gap:7px;font-size:13px;color:rgba(255,255,255,.65)}
+    .hero-badge svg{width:15px;height:15px;color:rgba(255,255,255,.4)}
+
+    /* Enroll Card */
+    .enroll-card{position:sticky;top:calc(var(--nav-h) + 20px);background:#fff;border-radius:var(--radius-lg);box-shadow:0 20px 60px rgba(0,0,0,.2),0 0 0 1px rgba(0,0,0,.04);overflow:hidden;z-index:10}
+    .enroll-preview{position:relative;width:100%;height:210px;overflow:hidden;cursor:pointer;background:#0f2557}
+    .enroll-preview-img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .3s}
+    .enroll-preview:hover .enroll-preview-img{transform:scale(1.04)}
+    .play-overlay{position:absolute;inset:0;background:rgba(0,0,0,.32);display:flex;align-items:center;justify-content:center;transition:background .2s}
+    .enroll-preview:hover .play-overlay{background:rgba(0,0,0,.18)}
+    .play-btn{width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;color:var(--brand);transition:transform .2s}
+    .enroll-preview:hover .play-btn{transform:scale(1.08)}
+    .play-btn svg{width:22px;height:22px;margin-left:3px}
+    .preview-label{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:12px;color:rgba(255,255,255,.8);white-space:nowrap}
+    .enroll-body{padding:22px}
+    .enroll-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+    .enroll-price{font-family:var(--font-display);font-size:30px;font-weight:700;color:var(--ink);letter-spacing:-1px}
+    .enroll-original{font-size:16px;color:var(--ink-muted);text-decoration:line-through}
+    .enroll-discount{font-size:13px;font-weight:700;color:var(--accent);background:rgba(255,107,53,.1);padding:2px 8px;border-radius:6px}
+    .enroll-timer{font-size:12.5px;color:var(--accent);font-weight:500;margin-bottom:18px;display:flex;align-items:center;gap:5px}
+    .enroll-timer svg{width:14px;height:14px}
+    .btn-enroll-big{width:100%;padding:14px;background:var(--brand);color:#fff;border:none;border-radius:var(--radius-md);font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;transition:all .15s;margin-bottom:10px;box-shadow:0 6px 20px rgba(45,107,228,.28)}
+    .btn-enroll-big:hover{background:var(--brand-2);transform:translateY(-1px);box-shadow:0 10px 28px rgba(45,107,228,.38)}
+    .btn-wishlist{width:100%;padding:11px;background:transparent;color:var(--ink-soft);border:1.5px solid var(--border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:7px}
+    .btn-wishlist:hover{border-color:var(--brand);color:var(--brand)}
+    .btn-wishlist svg{width:16px;height:16px}
+    .includes-title{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:12px}
+    .include-item{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:13px;color:var(--ink-soft)}
+    .include-item svg{width:15px;height:15px;color:var(--brand);flex-shrink:0}
+    .enroll-guarantee{border-top:1px solid var(--border);margin-top:16px;padding-top:14px;text-align:center;font-size:12px;color:var(--ink-muted);display:flex;align-items:center;justify-content:center;gap:6px}
+    .enroll-guarantee svg{width:14px;height:14px;color:var(--green)}
+
+    /* Page body */
+    .course-body{max-width:1200px;margin:0 auto;padding:40px;display:grid;grid-template-columns:1fr 390px;gap:48px}
+    .course-main{min-width:0}
+
+    /* Tabs */
+    .tab-nav{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:36px;position:sticky;top:var(--nav-h);background:var(--paper);z-index:50}
+    .tab-btn{padding:13px 20px;font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--ink-muted);background:transparent;border:none;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .tab-btn:hover{color:var(--ink)}
+    .tab-btn.active{color:var(--brand);border-bottom-color:var(--brand);font-weight:600}
+
+    .section-block{margin-bottom:44px;scroll-margin-top:120px}
+    .section-title{font-family:var(--font-display);font-size:21px;font-weight:700;color:var(--ink);letter-spacing:-.4px;margin-bottom:20px}
+
+    /* Learn grid */
+    .learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;background:rgba(45,107,228,.04);border:1px solid rgba(45,107,228,.14);border-radius:var(--radius-md);padding:24px}
+    .learn-item{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--ink-soft);line-height:1.5}
+    .learn-item svg{width:16px;height:16px;color:var(--brand);flex-shrink:0;margin-top:2px}
+
+    /* Reqs */
+    .req-list{display:flex;flex-direction:column;gap:10px}
+    .req-item{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--ink-soft);line-height:1.5}
+    .req-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0;margin-top:8px}
+
+    /* Curriculum */
+    .curriculum-stats{display:flex;gap:20px;flex-wrap:wrap;font-size:13.5px;color:var(--ink-muted);margin-bottom:18px}
+    .curriculum-stats strong{color:var(--ink)}
+    .section-accordion{border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:8px}
+    .accordion-header{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:var(--paper-2);cursor:pointer;transition:background .15s;gap:12px}
+    .accordion-header:hover{background:var(--paper-3)}
+    .accordion-header.open{background:rgba(45,107,228,.06)}
+    .acc-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+    .acc-toggle{width:22px;height:22px;border-radius:6px;background:var(--paper-3);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);flex-shrink:0;transition:all .2s}
+    .accordion-header.open .acc-toggle{background:var(--brand-light);color:var(--brand);transform:rotate(180deg)}
+    .acc-toggle svg{width:13px;height:13px}
+    .acc-title{font-size:14.5px;font-weight:600;color:var(--ink)}
+    .acc-sub{font-size:12px;color:var(--ink-muted);margin-top:2px}
+    .acc-meta{font-size:12.5px;color:var(--ink-muted);white-space:nowrap}
+    .accordion-body{display:none;border-top:1px solid var(--border)}
+    .accordion-body.open{display:block}
+    .lesson-item{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+    .lesson-item:last-child{border-bottom:none}
+    .lesson-item:hover{background:var(--paper-2)}
+    .lesson-type-icon{width:28px;height:28px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .lesson-type-icon svg{width:14px;height:14px}
+    .icon-video{background:rgba(45,107,228,.1);color:var(--brand)}
+    .icon-quiz{background:rgba(245,197,24,.15);color:#92400e}
+    .icon-doc{background:rgba(34,197,94,.1);color:#15803d}
+    .lesson-title{flex:1;font-size:13.5px;color:var(--ink-soft)}
+    .lesson-title.is-preview{color:var(--brand);font-weight:500}
+    .lesson-meta{display:flex;align-items:center;gap:8px}
+    .preview-tag{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--brand);background:var(--brand-light);padding:2px 7px;border-radius:4px}
+    .lesson-duration{font-size:12px;color:var(--ink-muted)}
+
+    /* Instructor */
+    .instructor-card{display:flex;gap:22px;align-items:flex-start;padding:26px;background:var(--paper-2);border:1px solid var(--border);border-radius:var(--radius-md)}
+    .instructor-photo{width:96px;height:96px;border-radius:50%;object-fit:cover;object-position:center top;display:block;flex-shrink:0;border:3px solid var(--border)}
+    .instructor-info{flex:1;min-width:0}
+    .instructor-full-name{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:3px}
+    .instructor-role{font-size:13.5px;color:var(--ink-muted);margin-bottom:14px}
+    .instructor-stats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px}
+    .inst-stat{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft)}
+    .inst-stat svg{width:15px;height:15px;color:var(--brand)}
+    .instructor-bio{font-size:14px;color:var(--ink-soft);line-height:1.75}
+
+    /* Reviews */
+    .reviews-summary{display:flex;gap:32px;align-items:center;background:var(--paper-2);border:1px solid var(--border);border-radius:var(--radius-md);padding:26px 30px;margin-bottom:28px}
+    .rating-big{text-align:center;flex-shrink:0}
+    .rating-big-num{font-family:var(--font-display);font-size:54px;font-weight:700;color:var(--ink);line-height:1;letter-spacing:-2px}
+    .rating-big-stars{color:var(--gold);font-size:18px;margin:5px 0}
+    .rating-big-label{font-size:12px;color:var(--ink-muted)}
+    .rating-bars{flex:1;display:flex;flex-direction:column;gap:7px}
+    .rating-bar-row{display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--ink-muted)}
+    .bar-label{width:40px;text-align:right}
+    .bar-track{flex:1;height:6px;background:var(--paper-3);border-radius:3px;overflow:hidden}
+    .bar-fill{height:100%;background:var(--gold);border-radius:3px}
+    .bar-pct{width:34px;color:var(--ink-soft)}
+    .review-card{padding:22px 0;border-bottom:1px solid var(--border)}
+    .review-card:last-child{border-bottom:none}
+    .review-header{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+    .review-avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:center top;display:block;flex-shrink:0;background:var(--paper-3)}
+    .review-name{font-size:14px;font-weight:600;color:var(--ink)}
+    .review-meta{font-size:12px;color:var(--ink-muted);display:flex;align-items:center;gap:8px;margin-top:2px}
+    .review-stars-gold{color:var(--gold);font-size:12px}
+    .review-text{font-size:14px;color:var(--ink-soft);line-height:1.75}
+    .review-helpful{margin-top:10px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-muted)}
+    .helpful-btn{padding:4px 12px;border:1px solid var(--border);border-radius:20px;background:none;font-family:var(--font-body);font-size:12px;color:var(--ink-muted);cursor:pointer;transition:all .15s}
+    .helpful-btn:hover{border-color:var(--brand);color:var(--brand)}
+
+    /* Related */
+    .related-list{display:flex;flex-direction:column;gap:12px}
+    .related-card{display:flex;gap:13px;align-items:flex-start;padding:13px;background:#fff;border:1px solid var(--border);border-radius:var(--radius-md);cursor:pointer;transition:all .2s}
+    .related-card:hover{border-color:var(--brand);box-shadow:0 4px 16px rgba(45,107,228,.08)}
+    .related-thumb-img{width:80px;height:60px;border-radius:8px;object-fit:cover;object-position:center;display:block;flex-shrink:0;background:var(--paper-3)}
+    .related-info{flex:1;min-width:0}
+    .related-title{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.4;margin-bottom:5px}
+    .related-meta{font-size:11.5px;color:var(--ink-muted);display:flex;gap:6px;align-items:center}
+    .related-price{font-size:13px;font-weight:700;color:var(--ink);flex-shrink:0}
+    .related-price.free{color:var(--green)}
+
+    .btn-text-primary{margin-top:14px;width:100%;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:none;font-family:var(--font-body);font-size:14px;font-weight:500;color:var(--brand);cursor:pointer;transition:all .15s}
+    .btn-text-primary:hover{background:var(--brand-light);border-color:var(--brand)}
+
+    @media(max-width:980px){
+      .hero-inner{grid-template-columns:1fr;padding:40px 24px}
+      .course-body{grid-template-columns:1fr;padding:28px 24px}
+      .course-sidebar{display:none}
+    }
+    @media(max-width:640px){
+      .navbar{padding:0 16px}
+      .nav-breadcrumb{display:none}
+      .learn-grid{grid-template-columns:1fr}
+      .reviews-summary{flex-direction:column}
+      .hero-banner-img{height:300px}
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <!-- images/logo.png | 34×34px | SkillNest square brand logo -->
+    <img src="images/logo.png" alt="SkillNest" class="nav-logo-img" width="34" height="34" />
+    <span class="nav-logo-text">SkillNest</span>
+  </a>
+  <div class="nav-breadcrumb">
+    <a href="explore.html">Explore</a> ›
+    <a href="explore.html">AI &amp; ML</a> ›
+    <span style="color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px">Complete Machine Learning &amp; AI Bootcamp</span>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-actions">
+    <a href="login.html"><button class="btn-nav btn-ghost">Log in</button></a>
+    <a href="register.html"><button class="btn-nav btn-fill">Sign up</button></a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<div class="course-hero">
+  <!--
+    images/ai-course.jpg
+    1280×480px
+    Wide cinematic banner: developer at desk with dual monitors showing neural network
+    diagrams and Python code, dark moody studio lighting, blue-tinted background
+  -->
+  <img
+    src="images/ai-course.jpg"
+    alt="Developer working on machine learning models with neural network diagrams on screen"
+    class="hero-banner-img"
+    width="1280"
+    height="480"
+  />
+  <div class="hero-overlay">
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-breadcrumb">
+          <a href="index.html">Home</a> › <a href="explore.html">Explore</a> › <span>AI &amp; Machine Learning</span>
+        </div>
+        <div class="hero-tags">
+          <span class="hero-tag tag-bestseller">Bestseller</span>
+          <span class="hero-tag tag-ai">AI &amp; ML</span>
+          <span class="hero-tag tag-level">All Levels</span>
+        </div>
+        <h1 class="hero-title">Complete Machine Learning<br />&amp; AI Bootcamp 2025</h1>
+        <p class="hero-desc">Master Python, NumPy, Pandas, Scikit-learn, TensorFlow, and PyTorch. Build 15 real-world ML projects and earn an industry-recognised certificate.</p>
+        <div class="hero-meta-row">
+          <span class="stars-gold">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span class="rating-bold">4.9</span>
+          <span style="color:rgba(255,255,255,.5)">(8,240 ratings)</span>
+          <span class="hero-dot">·</span>
+          <span>12,400 students</span>
+          <span class="hero-dot">·</span>
+          <span>Updated Nov 2025</span>
+        </div>
+        <div class="hero-instructor-row">
+          <!--
+            images/instructor-priya.jpg
+            36×36px (display) — professional headshot of Dr. Priya Sharma cropped to circle
+            Also used at 96×96px in the instructor section below
+          -->
+          <img
+            src="images/instructor-priya.jpg"
+            alt="Dr. Priya Sharma"
+            class="hero-instructor-photo"
+            width="36"
+            height="36"
+          />
+          <div>
+            <div class="instructor-by">Created by</div>
+            <div class="instructor-name">Dr. Priya Sharma</div>
+          </div>
+        </div>
+        <div class="hero-badges">
+          <div class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>48 hours on-demand video</div>
+          <div class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>32 articles &amp; resources</div>
+          <div class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>All devices</div>
+          <div class="hero-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Certificate on completion</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="course-body">
+  <main class="course-main">
+
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="activateTab(this,'overview')">Overview</button>
+      <button class="tab-btn" onclick="activateTab(this,'curriculum')">Curriculum</button>
+      <button class="tab-btn" onclick="activateTab(this,'instructor')">Instructor</button>
+      <button class="tab-btn" onclick="activateTab(this,'reviews')">Reviews</button>
+    </div>
+
+    <!-- Overview -->
+    <div class="section-block" id="overview">
+      <h2 class="section-title">What You'll Learn</h2>
+      <div class="learn-grid">
+        <div class="learn-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Build and train ML models from scratch with Python</div>
+        <div class="learn-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Master Neural Networks, CNNs, RNNs &amp; Transformers</div>
+        <div class="learn-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Use TensorFlow 2.x and PyTorch for deep learning</div>
+        <div class="learn-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Work with real datasets — NLP, Computer Vision, Tabular</div>
+        <div class="learn-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Deploy ML models to production with FastAPI &amp; Docker</div>
+        <div class="learn-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Feature engineering, hyperparameter tuning &amp; MLOps</div>
+        <div class="learn-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Build a portfolio with 15 end-to-end projects</div>
+        <div class="learn-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ace ML Engineer &amp; Data Scientist interviews</div>
+      </div>
+    </div>
+
+    <!-- Requirements -->
+    <div class="section-block">
+      <h2 class="section-title">Requirements</h2>
+      <div class="req-list">
+        <div class="req-item"><span class="req-dot"></span>Basic Python knowledge — variables, loops, functions</div>
+        <div class="req-item"><span class="req-dot"></span>High school mathematics — algebra, basic statistics</div>
+        <div class="req-item"><span class="req-dot"></span>A computer with internet access (Windows, Mac, or Linux)</div>
+        <div class="req-item"><span class="req-dot"></span>No prior ML or AI experience required — we start from zero</div>
+      </div>
+    </div>
+
+    <!-- Curriculum -->
+    <div class="section-block" id="curriculum">
+      <h2 class="section-title">Course Curriculum</h2>
+      <div class="curriculum-stats"><span><strong>12 sections</strong></span><span><strong>148 lectures</strong></span><span><strong>48 total hours</strong></span></div>
+
+      <div class="section-accordion">
+        <div class="accordion-header open" onclick="toggleAccordion(this)">
+          <div class="acc-left">
+            <button class="acc-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg></button>
+            <div><div class="acc-title">Section 1 — Python Foundations for ML</div><div class="acc-sub">8 lectures · 3h 20m</div></div>
+          </div>
+          <div class="acc-meta">3h 20m</div>
+        </div>
+        <div class="accordion-body open">
+          <div class="lesson-item"><div class="lesson-type-icon icon-video"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="lesson-title is-preview">Welcome &amp; Course Overview</span><div class="lesson-meta"><span class="preview-tag">Preview</span><span class="lesson-duration">8:42</span></div></div>
+          <div class="lesson-item"><div class="lesson-type-icon icon-video"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="lesson-title is-preview">Python Setup &amp; Jupyter Notebooks</span><div class="lesson-meta"><span class="preview-tag">Preview</span><span class="lesson-duration">14:15</span></div></div>
+          <div class="lesson-item"><div class="lesson-type-icon icon-video"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="lesson-title">NumPy Arrays &amp; Vectorized Operations</span><div class="lesson-meta"><span class="lesson-duration">22:08</span></div></div>
+          <div class="lesson-item"><div class="lesson-type-icon icon-video"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="lesson-title">Pandas DataFrames — Load, Clean &amp; Analyse</span><div class="lesson-meta"><span class="lesson-duration">31:44</span></div></div>
+          <div class="lesson-item"><div class="lesson-type-icon icon-quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span class="lesson-title">Quiz — Python &amp; NumPy Fundamentals</span><div class="lesson-meta"><span class="lesson-duration">5 questions</span></div></div>
+        </div>
+      </div>
+
+      <div class="section-accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <div class="acc-left"><button class="acc-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button><div><div class="acc-title">Section 2 — Data Preprocessing &amp; EDA</div><div class="acc-sub">12 lectures · 5h 10m</div></div></div>
+          <div class="acc-meta">5h 10m</div>
+        </div>
+        <div class="accordion-body">
+          <div class="lesson-item"><div class="lesson-type-icon icon-video"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="lesson-title">Handling Missing Values &amp; Outliers</span><div class="lesson-meta"><span class="lesson-duration">28:30</span></div></div>
+          <div class="lesson-item"><div class="lesson-type-icon icon-video"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span class="lesson-title">Feature Scaling — Normalisation &amp; Standardisation</span><div class="lesson-meta"><span class="lesson-duration">19:55</span></div></div>
+          <div class="lesson-item"><div class="lesson-type-icon icon-doc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><span class="lesson-title">EDA Cheatsheet PDF</span><div class="lesson-meta"><span class="lesson-duration">Resource</span></div></div>
+        </div>
+      </div>
+
+      <div class="section-accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)"><div class="acc-left"><button class="acc-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button><div><div class="acc-title">Section 3 — Classical ML Algorithms</div><div class="acc-sub">18 lectures · 8h 45m</div></div></div><div class="acc-meta">8h 45m</div></div>
+        <div class="accordion-body"></div>
+      </div>
+
+      <div class="section-accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)"><div class="acc-left"><button class="acc-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></button><div><div class="acc-title">Section 4 — Deep Learning with TensorFlow</div><div class="acc-sub">22 lectures · 11h 20m</div></div></div><div class="acc-meta">11h 20m</div></div>
+        <div class="accordion-body"></div>
+      </div>
+
+      <button class="btn-text-primary">Show all 12 sections (148 lectures)</button>
+    </div>
+
+    <!-- Instructor -->
+    <div class="section-block" id="instructor">
+      <h2 class="section-title">Your Instructor</h2>
+      <div class="instructor-card">
+        <!--
+          images/instructor-priya.jpg
+          96×96px — professional studio headshot of Dr. Priya Sharma
+          Warm lighting, plain light background, business casual attire
+        -->
+        <img
+          src="images/instructor-priya.jpg"
+          alt="Dr. Priya Sharma — AI Research Scientist and course instructor"
+          class="instructor-photo"
+          width="96"
+          height="96"
+        />
+        <div class="instructor-info">
+          <div class="instructor-full-name">Dr. Priya Sharma</div>
+          <div class="instructor-role">AI Research Scientist &amp; Educator · IIT Bombay Alumni</div>
+          <div class="instructor-stats">
+            <div class="inst-stat"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>4.9 instructor rating</div>
+            <div class="inst-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>48,200 students</div>
+            <div class="inst-stat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>6 courses</div>
+          </div>
+          <p class="instructor-bio">Dr. Priya Sharma is an AI researcher and educator with 10+ years building production ML systems at Google DeepMind and Flipkart. She completed her PhD from IIT Bombay and has published 14 papers at NeurIPS and ICML. Her teaching style prioritises intuition-first learning backed by rigorous mathematics.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="section-block" id="reviews">
+      <h2 class="section-title">Student Reviews</h2>
+      <div class="reviews-summary">
+        <div class="rating-big">
+          <div class="rating-big-num">4.9</div>
+          <div class="rating-big-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="rating-big-label">Course Rating</div>
+        </div>
+        <div class="rating-bars">
+          <div class="rating-bar-row"><span class="bar-label">5 &#9733;</span><div class="bar-track"><div class="bar-fill" style="width:82%"></div></div><span class="bar-pct">82%</span></div>
+          <div class="rating-bar-row"><span class="bar-label">4 &#9733;</span><div class="bar-track"><div class="bar-fill" style="width:13%"></div></div><span class="bar-pct">13%</span></div>
+          <div class="rating-bar-row"><span class="bar-label">3 &#9733;</span><div class="bar-track"><div class="bar-fill" style="width:3%"></div></div><span class="bar-pct">3%</span></div>
+          <div class="rating-bar-row"><span class="bar-label">2 &#9733;</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span class="bar-pct">1%</span></div>
+          <div class="rating-bar-row"><span class="bar-label">1 &#9733;</span><div class="bar-track"><div class="bar-fill" style="width:1%"></div></div><span class="bar-pct">1%</span></div>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <!--
+            images/reviewer-arjun.jpg
+            40×40px — casual friendly headshot, young Indian male student
+          -->
+          <img src="images/reviewer-arjun.jpg" alt="Arjun Kumar" class="review-avatar-img" width="40" height="40" />
+          <div><div class="review-name">Arjun Kumar</div><div class="review-meta"><span class="review-stars-gold">&#9733;&#9733;&#9733;&#9733;&#9733;</span> · 2 weeks ago</div></div>
+        </div>
+        <p class="review-text">This course completely changed how I think about ML. Dr. Priya explains even the most complex topics with incredible clarity. The projects are real-world and practical — I built a sentiment analysis tool and a recommendation system. Best investment I've made for my career!</p>
+        <div class="review-helpful">Helpful? <button class="helpful-btn">Yes (42)</button><button class="helpful-btn">No (2)</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <!--
+            images/reviewer-sneha.jpg
+            40×40px — casual friendly headshot, young Indian female student
+          -->
+          <img src="images/reviewer-sneha.jpg" alt="Sneha Rao" class="review-avatar-img" width="40" height="40" />
+          <div><div class="review-name">Sneha Rao</div><div class="review-meta"><span class="review-stars-gold">&#9733;&#9733;&#9733;&#9733;&#9733;</span> · 1 month ago</div></div>
+        </div>
+        <p class="review-text">I came in with only basic Python knowledge and now I can confidently build and deploy ML models. The TensorFlow and CNN section is phenomenal. The math is explained so visually — highly recommend for anyone serious about AI.</p>
+        <div class="review-helpful">Helpful? <button class="helpful-btn">Yes (38)</button><button class="helpful-btn">No (1)</button></div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <!--
+            images/reviewer-vikram.jpg
+            40×40px — casual headshot, male student mid-20s
+          -->
+          <img src="images/reviewer-vikram.jpg" alt="Vikram Mehta" class="review-avatar-img" width="40" height="40" />
+          <div><div class="review-name">Vikram Mehta</div><div class="review-meta"><span class="review-stars-gold">&#9733;&#9733;&#9733;&#9733;</span> · 3 months ago</div></div>
+        </div>
+        <p class="review-text">Very comprehensive. Covers everything from basics to advanced deployment. A few sections felt a bit rushed but overall quality is excellent. The quizzes really help reinforce concepts. Would give 4.5 stars if possible.</p>
+        <div class="review-helpful">Helpful? <button class="helpful-btn">Yes (21)</button><button class="helpful-btn">No (3)</button></div>
+      </div>
+
+      <button class="btn-text-primary">See all 8,240 reviews</button>
+    </div>
+
+  </main>
+
+  <!-- Sidebar -->
+  <aside class="course-sidebar">
+    <div class="enroll-card">
+      <div class="enroll-preview" onclick="alert('Preview coming soon!')">
+        <!--
+          images/ai-course.jpg
+          380×210px (16:9 crop) — same banner image used as video preview thumbnail
+          inside the sticky enroll card
+        -->
+        <img
+          src="images/ai-course.jpg"
+          alt="Course preview thumbnail — machine learning and AI introduction"
+          class="enroll-preview-img"
+          width="380"
+          height="210"
+        />
+        <div class="play-overlay">
+          <div class="play-btn"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        </div>
+        <span class="preview-label">Preview this course</span>
+      </div>
+      <div class="enroll-body">
+        <div class="enroll-price-row">
+          <span class="enroll-price">&#8377;1,499</span>
+          <span class="enroll-original">&#8377;4,999</span>
+          <span class="enroll-discount">70% OFF</span>
+        </div>
+        <div class="enroll-timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><strong>2 days</strong> left at this price!</div>
+        <button class="btn-enroll-big" onclick="window.location='register.html'">Enroll Now</button>
+        <button class="btn-wishlist" id="wishlist-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Save for Later</button>
+        <div class="includes-title">This course includes</div>
+        <div class="include-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>48 hours on-demand video</div>
+        <div class="include-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>32 downloadable resources</div>
+        <div class="include-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Mobile &amp; desktop access</div>
+        <div class="include-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Full lifetime access</div>
+        <div class="include-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Certificate of completion</div>
+        <div class="include-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Community Q&amp;A access</div>
+        <div class="enroll-guarantee"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>30-day money-back guarantee</div>
+      </div>
+    </div>
+
+    <div style="margin-top:28px">
+      <div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--ink);margin-bottom:14px">Students Also Bought</div>
+      <div class="related-list">
+
+        <div class="related-card" onclick="window.location='course.html'">
+          <!--
+            images/web-course.jpg
+            80×60px — thumbnail: web development, code on screen, React/Node.js vibe
+          -->
+          <img src="images/web-course.jpg" alt="Full-Stack Web Development with React and Node.js" class="related-thumb-img" width="80" height="60" />
+          <div class="related-info">
+            <div class="related-title">Full-Stack Web Dev — React &amp; Node.js</div>
+            <div class="related-meta"><span class="stars-gold" style="font-size:11px">&#9733;&#9733;&#9733;&#9733;</span><span>4.7 · 9,800 students</span></div>
+          </div>
+          <div class="related-price">&#8377;999</div>
+        </div>
+
+        <div class="related-card" onclick="window.location='course.html'">
+          <!--
+            images/data-course.jpg
+            80×60px — thumbnail: data analysis, charts/graphs, Python notebook vibe
+          -->
+          <img src="images/data-course.jpg" alt="Data Analysis with Python and Pandas" class="related-thumb-img" width="80" height="60" />
+          <div class="related-info">
+            <div class="related-title">Data Analysis with Python &amp; Pandas</div>
+            <div class="related-meta"><span class="stars-gold" style="font-size:11px">&#9733;&#9733;&#9733;&#9733;</span><span>4.6 · 14,200 students</span></div>
+          </div>
+          <div class="related-price free">Free</div>
+        </div>
+
+        <div class="related-card" onclick="window.location='course.html'">
+          <!--
+            images/cloud-course.jpg
+            80×60px — thumbnail: cloud infrastructure, AWS console or server racks
+          -->
+          <img src="images/cloud-course.jpg" alt="AWS Cloud Practitioner and Solutions Architect" class="related-thumb-img" width="80" height="60" />
+          <div class="related-info">
+            <div class="related-title">AWS Cloud Practitioner + Solutions Architect</div>
+            <div class="related-meta"><span class="stars-gold" style="font-size:11px">&#9733;&#9733;&#9733;&#9733;</span><span>4.7 · 4,100 students</span></div>
+          </div>
+          <div class="related-price">&#8377;2,199</div>
+        </div>
+
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+  function toggleAccordion(header) {
+    const body = header.nextElementSibling;
+    const open = header.classList.contains('open');
+    header.classList.toggle('open', !open);
+    body.classList.toggle('open', !open);
+  }
+  function activateTab(btn, id) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }
+  const tabSections = ['overview','curriculum','instructor','reviews'];
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    tabSections.forEach(id => { const el = document.getElementById(id); if (el && window.scrollY >= el.offsetTop - 140) cur = id; });
+    document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', tabSections[i] === cur || (cur===''&&i===0)));
+  });
+  const wb = document.getElementById('wishlist-btn');
+  let wished = false;
+  wb.addEventListener('click', () => {
+    wished = !wished;
+    wb.innerHTML = wished
+      ? `<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;color:var(--brand)"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Saved!`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>Save for Later`;
+    wb.style.borderColor = wished ? 'var(--brand)' : 'var(--border)';
+    wb.style.color = wished ? 'var(--brand)' : 'var(--ink-soft)';
+  });
+</script>
+</body>
+</html>
