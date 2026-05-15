@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Course — SkillNest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    /*
+    ══════════════════════════════════════════
+    IMAGE SIZE REFERENCE
+    ══════════════════════════════════════════
+    images/logo.png              →  34×34px   sidebar logo mark
+    images/reviewer-arjun.jpg    →  36×36px   sidebar user avatar
+    [course-thumbnail-upload]    →  800×450px  recommended upload size for
+                                    course thumbnail (shown in preview box,
+                                    16:9 ratio, min 800×450px)
+    ══════════════════════════════════════════
+    */
+
+    :root {
+      --ink:          #0D0D0D;
+      --ink-soft:     #3A3A3A;
+      --ink-muted:    #7A7A8A;
+      --paper:        #F5F4FB;
+      --paper-2:      #EEEDF8;
+      --paper-3:      #E4E2F5;
+      --surface:      #FFFFFF;
+      --brand:        #2D6BE4;
+      --brand-2:      #1A50C0;
+      --brand-light:  rgba(45,107,228,.09);
+      --accent:       #FF6B35;
+      --gold:         #F5C518;
+      --green:        #22C55E;
+      --green-bg:     rgba(34,197,94,.1);
+      --border:       #E4E2F5;
+      --border-strong:#C8C5E0;
+      --danger:       #EF4444;
+      --danger-bg:    #FEF2F2;
+      --radius-sm:    8px;
+      --radius-md:    14px;
+      --radius-lg:    20px;
+      --font-display: 'Clash Display', sans-serif;
+      --font-body:    'Satoshi', sans-serif;
+      --sidebar-w:    248px;
+      --topbar-h:     64px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font-body); cursor: pointer; }
+    input, select, textarea { font-family: var(--font-body); }
+
+    /* ══ SIDEBAR ══ */
+    .sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--surface); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 100; overflow-y: auto;
+    }
+    .sidebar-logo {
+      padding: 20px 18px 16px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+    .sidebar-logo-img { width: 34px; height: 34px; border-radius: 9px; object-fit: cover; display: block; flex-shrink: 0; }
+    .sidebar-logo-text { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--ink); letter-spacing: -.4px; }
+    .sidebar-logo-sub  { font-size: 10.5px; color: var(--ink-muted); margin-top: 1px; }
+    .sidebar-nav { padding: 12px 10px; flex: 1; }
+    .nav-group-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--ink-muted); padding: 10px 10px 4px; }
+    .nav-link { display: flex; align-items: center; gap: 10px; padding: 9px 11px; border-radius: var(--radius-sm); font-size: 13.5px; color: var(--ink-muted); transition: background .15s, color .15s; margin-bottom: 1px; }
+    .nav-link:hover { background: var(--paper); color: var(--ink); }
+    .nav-link.active { background: var(--brand-light); color: var(--brand); font-weight: 600; }
+    .nav-link svg { width: 17px; height: 17px; flex-shrink: 0; opacity: .7; }
+    .nav-link.active svg { opacity: 1; }
+    .nav-badge { margin-left: auto; background: var(--brand); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; }
+    .sidebar-footer { padding: 10px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .sidebar-user { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background .15s; }
+    .sidebar-user:hover { background: var(--paper); }
+    .sidebar-avatar-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; object-position: center top; display: block; flex-shrink: 0; border: 2px solid var(--border); }
+    .sidebar-user-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .sidebar-user-plan { font-size: 11px; color: var(--ink-muted); display: flex; align-items: center; gap: 4px; }
+    .plan-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+
+    /* ══ TOPBAR ══ */
+    .topbar {
+      position: fixed; top: 0; left: var(--sidebar-w); right: 0;
+      height: var(--topbar-h);
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 28px; gap: 14px;
+      z-index: 90;
+    }
+    .topbar-back {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 13.5px; color: var(--ink-muted); cursor: pointer;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      padding: 7px 14px; background: none; transition: all .15s;
+    }
+    .topbar-back:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
+    .topbar-back svg { width: 15px; height: 15px; }
+    .topbar-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -.4px; }
+    .topbar-spacer { flex: 1; }
+    .topbar-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-save-draft {
+      padding: 8px 18px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: none; font-family: var(--font-body); font-size: 13.5px; font-weight: 500;
+      color: var(--ink-soft); cursor: pointer; transition: all .15s;
+    }
+    .btn-save-draft:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-publish {
+      padding: 8px 20px; background: var(--brand); color: #fff;
+      border: none; border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 13.5px; font-weight: 600;
+      cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 7px;
+    }
+    .btn-publish:hover { background: var(--brand-2); transform: translateY(-1px); }
+    .btn-publish svg { width: 15px; height: 15px; }
+
+    /* ══ MAIN ══ */
+    .main-content { margin-left: var(--sidebar-w); padding-top: var(--topbar-h); min-height: 100vh; }
+    .page-inner { padding: 28px 28px 60px; max-width: 1100px; }
+
+    /* ══ STEP PROGRESS BAR ══ */
+    .step-progress {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 20px 28px;
+      display: flex; align-items: center;
+      margin-bottom: 28px; gap: 0;
+    }
+    .step-item {
+      display: flex; align-items: center; gap: 10px;
+      flex: 1; cursor: pointer;
+    }
+    .step-circle {
+      width: 34px; height: 34px; border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--ink-muted);
+      flex-shrink: 0; transition: all .25s; background: var(--surface);
+    }
+    .step-item.active  .step-circle { border-color: var(--brand); background: var(--brand); color: #fff; }
+    .step-item.done    .step-circle { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+    .step-item.active  .step-circle svg { display: block; }
+    .step-text {}
+    .step-label { font-size: 13px; font-weight: 600; color: var(--ink-muted); }
+    .step-item.active .step-label { color: var(--brand); }
+    .step-item.done   .step-label { color: var(--green); }
+    .step-desc  { font-size: 11px; color: var(--ink-muted); }
+    .step-connector {
+      flex: 1; height: 2px;
+      background: var(--border); margin: 0 12px; border-radius: 1px;
+      transition: background .25s;
+    }
+    .step-connector.done { background: var(--green); }
+
+    /* ══ FORM LAYOUT ══ */
+    .form-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+    .form-main {}
+    .form-aside { display: flex; flex-direction: column; gap: 18px; }
+
+    /* Panel card */
+    .panel-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); overflow: hidden;
+    }
+    .panel-card-header {
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      font-family: var(--font-display); font-size: 14px; font-weight: 700;
+      color: var(--ink); letter-spacing: -.2px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .panel-card-header svg { width: 16px; height: 16px; color: var(--brand); }
+    .panel-card-body { padding: 18px 20px; }
+
+    /* Step panels (shown/hidden) */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    /* Form sections */
+    .form-section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); overflow: hidden; margin-bottom: 18px;
+    }
+    .form-section-header {
+      padding: 16px 22px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .form-section-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: var(--brand-light); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .form-section-icon svg { width: 15px; height: 15px; color: var(--brand); }
+    .form-section-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--ink); }
+    .form-section-desc  { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
+    .form-section-body  { padding: 20px 22px; }
+
+    /* Fields */
+    .form-group  { margin-bottom: 18px; }
+    .form-group:last-child { margin-bottom: 0; }
+    .form-row    { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-row-3  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .form-label  {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 12.5px; font-weight: 600; color: var(--ink-soft);
+      margin-bottom: 6px; text-transform: uppercase; letter-spacing: .05em;
+    }
+    .label-required { color: var(--danger); margin-left: 2px; }
+    .label-optional { font-size: 11px; font-weight: 400; color: var(--ink-muted); text-transform: none; letter-spacing: 0; }
+    .label-count    { font-size: 11px; color: var(--ink-muted); font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+    .input-wrap  { position: relative; }
+    .input-icon  { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ink-muted); width: 16px; height: 16px; pointer-events: none; }
+    .form-input  {
+      width: 100%; padding: 10px 13px 10px 38px;
+      border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 14px; color: var(--ink);
+      background: var(--paper); outline: none;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+    }
+    .form-input.no-icon { padding-left: 13px; }
+    .form-input:focus   { border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px rgba(45,107,228,.1); }
+    .form-input::placeholder { color: var(--ink-muted); }
+    .form-input.has-error { border-color: var(--danger); }
+
+    .form-select {
+      width: 100%; padding: 10px 36px 10px 38px;
+      border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 14px; color: var(--ink);
+      background: var(--paper); outline: none; cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237A7A8A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 13px center;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .form-select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(45,107,228,.1); background-color: #fff; }
+
+    .form-textarea {
+      width: 100%; padding: 10px 13px;
+      border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 14px; color: var(--ink);
+      background: var(--paper); outline: none; resize: vertical; min-height: 90px;
+      transition: border-color .15s, box-shadow .15s, background .15s; line-height: 1.6;
+    }
+    .form-textarea:focus { border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px rgba(45,107,228,.1); }
+    .form-textarea::placeholder { color: var(--ink-muted); }
+    .form-hint { font-size: 12px; color: var(--ink-muted); margin-top: 5px; }
+    .field-error { font-size: 12px; color: var(--danger); margin-top: 5px; display: none; }
+    .field-error.show { display: block; }
+
+    /* Tags input */
+    .tags-input-wrap {
+      min-height: 44px; padding: 6px 10px;
+      border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm);
+      background: var(--paper); display: flex; flex-wrap: wrap; gap: 6px;
+      align-items: center; cursor: text; transition: border-color .15s;
+    }
+    .tags-input-wrap:focus-within { border-color: var(--brand); background: #fff; box-shadow: 0 0 0 3px rgba(45,107,228,.1); }
+    .tag-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--brand-light); color: var(--brand);
+      padding: 3px 9px 3px 10px; border-radius: 6px;
+      font-size: 13px; font-weight: 500;
+    }
+    .tag-chip button { background: none; border: none; color: var(--brand); padding: 0; font-size: 14px; line-height: 1; cursor: pointer; display: flex; align-items: center; }
+    .tag-chip button:hover { color: var(--danger); }
+    .tags-input {
+      border: none; outline: none; background: transparent;
+      font-family: var(--font-body); font-size: 14px; color: var(--ink); min-width: 120px; flex: 1;
+    }
+    .tags-input::placeholder { color: var(--ink-muted); }
+
+    /* Thumbnail upload */
+    .thumb-upload {
+      border: 2px dashed var(--border-strong); border-radius: var(--radius-md);
+      padding: 36px 20px; text-align: center; cursor: pointer;
+      transition: all .2s; background: var(--paper); position: relative;
+      overflow: hidden;
+    }
+    .thumb-upload:hover, .thumb-upload.drag-over {
+      border-color: var(--brand); background: var(--brand-light);
+    }
+    .thumb-upload input[type="file"] { display: none; }
+    .thumb-upload-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--paper-3); display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; transition: background .2s;
+    }
+    .thumb-upload:hover .thumb-upload-icon { background: var(--brand-light); }
+    .thumb-upload-icon svg { width: 24px; height: 24px; color: var(--ink-muted); }
+    .thumb-upload:hover .thumb-upload-icon svg { color: var(--brand); }
+    .thumb-upload-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+    .thumb-upload-sub   { font-size: 12.5px; color: var(--ink-muted); line-height: 1.5; }
+    .thumb-upload-sub span { color: var(--brand); font-weight: 500; }
+    .thumb-preview {
+      display: none; position: relative;
+      width: 100%; aspect-ratio: 16/9;
+      border-radius: var(--radius-sm); overflow: hidden; background: var(--paper-3);
+    }
+    /* uploaded thumbnail preview: 800×450px recommended */
+    .thumb-preview-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .thumb-preview-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,.45);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      opacity: 0; transition: opacity .2s;
+    }
+    .thumb-preview:hover .thumb-preview-overlay { opacity: 1; }
+    .overlay-btn {
+      padding: 7px 16px; border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all .15s; border: none;
+    }
+    .overlay-btn-change { background: #fff; color: var(--ink); }
+    .overlay-btn-remove { background: rgba(239,68,68,.85); color: #fff; }
+
+    /* Pricing toggle */
+    .price-toggle {
+      display: flex; gap: 0;
+      border: 1.5px solid var(--border-strong); border-radius: var(--radius-sm);
+      overflow: hidden; margin-bottom: 14px;
+    }
+    .price-toggle-btn {
+      flex: 1; padding: 10px 14px; border: none; background: var(--paper);
+      font-family: var(--font-body); font-size: 13.5px; font-weight: 500;
+      color: var(--ink-muted); cursor: pointer; transition: all .15s; text-align: center;
+    }
+    .price-toggle-btn.active { background: var(--brand); color: #fff; font-weight: 600; }
+
+    /* Curriculum builder */
+    .curriculum-section {
+      border: 1px solid var(--border); border-radius: var(--radius-md);
+      overflow: hidden; margin-bottom: 10px;
+    }
+    .curriculum-section-header {
+      padding: 13px 16px; background: var(--paper-2);
+      display: flex; align-items: center; gap: 10px; cursor: pointer;
+    }
+    .curriculum-section-header:hover { background: var(--paper-3); }
+    .section-drag-handle { color: var(--ink-muted); cursor: grab; }
+    .section-drag-handle svg { width: 16px; height: 16px; }
+    .section-name-input {
+      flex: 1; border: none; background: transparent;
+      font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--ink);
+      outline: none;
+    }
+    .section-name-input::placeholder { color: var(--ink-muted); font-weight: 400; }
+    .section-lesson-count { font-size: 12px; color: var(--ink-muted); white-space: nowrap; }
+    .btn-section-action {
+      width: 28px; height: 28px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--ink-muted); transition: all .15s; flex-shrink: 0;
+    }
+    .btn-section-action:hover { border-color: var(--danger); color: var(--danger); }
+    .btn-section-action svg { width: 14px; height: 14px; }
+    .curriculum-lessons { border-top: 1px solid var(--border); }
+    .lesson-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px; border-bottom: 1px solid var(--border);
+      transition: background .15s;
+    }
+    .lesson-row:last-child { border-bottom: none; }
+    .lesson-row:hover { background: var(--paper); }
+    .lesson-type-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .dot-video { background: var(--brand); }
+    .dot-quiz  { background: var(--gold); }
+    .dot-doc   { background: var(--green); }
+    .lesson-name-input {
+      flex: 1; border: none; background: transparent;
+      font-family: var(--font-body); font-size: 13.5px; color: var(--ink); outline: none;
+    }
+    .lesson-name-input::placeholder { color: var(--ink-muted); }
+    .lesson-type-select {
+      padding: 4px 24px 4px 8px; border: 1px solid var(--border);
+      border-radius: 6px; font-family: var(--font-body); font-size: 12px;
+      color: var(--ink-soft); background: var(--paper); outline: none; cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='8' height='5' viewBox='0 0 8 5' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%237A7A8A' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 8px center;
+    }
+    .btn-remove-lesson {
+      width: 24px; height: 24px; border-radius: 5px; border: none;
+      background: none; color: var(--ink-muted); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all .15s;
+    }
+    .btn-remove-lesson:hover { background: var(--danger-bg); color: var(--danger); }
+    .btn-remove-lesson svg { width: 13px; height: 13px; }
+    .btn-add-lesson {
+      display: flex; align-items: center; gap: 7px;
+      padding: 10px 16px; width: 100%;
+      background: none; border: none; border-top: 1px solid var(--border);
+      font-family: var(--font-body); font-size: 13px; font-weight: 500;
+      color: var(--brand); cursor: pointer; transition: background .15s;
+    }
+    .btn-add-lesson:hover { background: var(--brand-light); }
+    .btn-add-lesson svg { width: 15px; height: 15px; }
+
+    .btn-add-section {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px; width: 100%;
+      border: 2px dashed var(--border-strong); border-radius: var(--radius-md);
+      background: none; font-family: var(--font-body); font-size: 14px; font-weight: 500;
+      color: var(--ink-muted); cursor: pointer; transition: all .15s; margin-top: 10px;
+    }
+    .btn-add-section:hover { border-color: var(--brand); color: var(--brand); background: var(--brand-light); }
+    .btn-add-section svg { width: 17px; height: 17px; }
+
+    /* Step nav buttons */
+    .step-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 24px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-step-back {
+      display: flex; align-items: center; gap: 7px;
+      padding: 10px 20px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      background: none; font-family: var(--font-body); font-size: 14px; font-weight: 500;
+      color: var(--ink-soft); cursor: pointer; transition: all .15s;
+    }
+    .btn-step-back:hover { border-color: var(--brand); color: var(--brand); }
+    .btn-step-back svg { width: 16px; height: 16px; }
+    .btn-step-next {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 24px; background: var(--brand); color: #fff;
+      border: none; border-radius: var(--radius-sm);
+      font-family: var(--font-body); font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all .15s; box-shadow: 0 4px 14px rgba(45,107,228,.25);
+    }
+    .btn-step-next:hover { background: var(--brand-2); transform: translateY(-1px); box-shadow: 0 7px 20px rgba(45,107,228,.3); }
+    .btn-step-next svg { width: 16px; height: 16px; }
+
+    /* Preview card (aside) */
+    .preview-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); overflow: hidden;
+    }
+    .preview-thumb {
+      height: 150px; background: var(--paper-2);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+    }
+    .preview-placeholder {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      color: var(--ink-muted);
+    }
+    .preview-placeholder svg { width: 32px; height: 32px; }
+    .preview-placeholder span { font-size: 12px; }
+    .preview-body { padding: 14px; }
+    .preview-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 8px; min-height: 20px; }
+    .preview-meta  { font-size: 12px; color: var(--ink-muted); display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .preview-price { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--ink); }
+    .preview-price.free { color: var(--green); }
+
+    /* Checklist */
+    .checklist-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 0; font-size: 13px; color: var(--ink-soft);
+      border-bottom: 1px solid var(--border);
+    }
+    .checklist-item:last-child { border-bottom: none; }
+    .checklist-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .check-done   { color: var(--green); }
+    .check-pending{ color: var(--ink-muted); }
+
+    /* Tips panel */
+    .tip-item { display: flex; gap: 10px; padding: 8px 0; font-size: 13px; color: var(--ink-soft); border-bottom: 1px solid var(--border); }
+    .tip-item:last-child { border-bottom: none; }
+    .tip-item svg { width: 15px; height: 15px; color: var(--brand); flex-shrink: 0; margin-top: 2px; }
+
+    /* ══ RESPONSIVE ══ */
+    @media (max-width: 1100px) { .form-layout { grid-template-columns: 1fr; } .form-aside { display: grid; grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 900px)  { .page-inner { padding: 20px; } .form-row, .form-row-3 { grid-template-columns: 1fr; } }
+    @media (max-width: 768px)  { :root { --sidebar-w: 0px; } .sidebar { display: none; } .topbar { left: 0; } .step-progress { overflow-x: auto; } }
+    @media (max-width: 640px)  { .form-aside { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="images/logo.png" alt="SkillNest" class="sidebar-logo-img" width="34" height="34" />
+      <div>
+        <div class="sidebar-logo-text">SkillNest</div>
+        <div class="sidebar-logo-sub">Learn · Grow · Nest</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-label">Main</div>
+      <a href="dashboard.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="explore.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        Explore
+        <span class="nav-badge">New</span>
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        My Courses
+      </a>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Saved
+      </a>
+      <div class="nav-group-label">Create</div>
+      <a href="add-course.html" class="nav-link active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Add Course
+      </a>
+      <div class="nav-group-label">Account</div>
+      <a href="#" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20a6 6 0 0 0-12 0"/><circle cx="12" cy="10" r="4"/></svg>
+        Profile
+      </a>
+      <a href="login.html" class="nav-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log out
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="#" class="sidebar-user">
+        <!--
+          images/reviewer-arjun.jpg
+          36×36px — logged-in user profile photo
+        -->
+        <img src="images/reviewer-arjun.jpg" alt="Arjun Kumar" class="sidebar-avatar-img" width="36" height="36" />
+        <div>
+          <div class="sidebar-user-name">Arjun Kumar</div>
+          <div class="sidebar-user-plan"><span class="plan-dot"></span>Pro member</div>
+        </div>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ══ TOPBAR ══ -->
+  <header class="topbar">
+    <button class="topbar-back" onclick="window.location='dashboard.html'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      Back
+    </button>
+    <div class="topbar-title">Add New Course</div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <button class="btn-save-draft" onclick="saveDraft()">Save Draft</button>
+      <button class="btn-publish" onclick="publishCourse()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        Publish Course
+      </button>
+    </div>
+  </header>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main-content">
+    <div class="page-inner">
+
+      <!-- Step Progress -->
+      <div class="step-progress">
+        <div class="step-item active" id="step-tab-1" onclick="goToStep(1)">
+          <div class="step-circle" id="sc-1">1</div>
+          <div class="step-text">
+            <div class="step-label">Basic Info</div>
+            <div class="step-desc">Title, category, level</div>
+          </div>
+        </div>
+        <div class="step-connector" id="conn-1"></div>
+        <div class="step-item" id="step-tab-2" onclick="goToStep(2)">
+          <div class="step-circle" id="sc-2">2</div>
+          <div class="step-text">
+            <div class="step-label">Media &amp; Pricing</div>
+            <div class="step-desc">Thumbnail, price</div>
+          </div>
+        </div>
+        <div class="step-connector" id="conn-2"></div>
+        <div class="step-item" id="step-tab-3" onclick="goToStep(3)">
+          <div class="step-circle" id="sc-3">3</div>
+          <div class="step-text">
+            <div class="step-label">Curriculum</div>
+            <div class="step-desc">Sections &amp; lessons</div>
+          </div>
+        </div>
+        <div class="step-connector" id="conn-3"></div>
+        <div class="step-item" id="step-tab-4" onclick="goToStep(4)">
+          <div class="step-circle" id="sc-4">4</div>
+          <div class="step-text">
+            <div class="step-label">Review &amp; Publish</div>
+            <div class="step-desc">Final checks</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-layout">
+
+        <!-- ── FORM MAIN ── -->
+        <div class="form-main">
+
+          <!-- ══ STEP 1: Basic Info ══ -->
+          <div class="step-panel active" id="panel-1">
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+                <div><div class="form-section-title">Course Details</div><div class="form-section-desc">The basics — what is your course about?</div></div>
+              </div>
+              <div class="form-section-body">
+                <div class="form-group">
+                  <div class="form-label">Course Title <span class="label-required">*</span> <span class="label-count" id="title-count">0 / 80</span></div>
+                  <div class="input-wrap">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/></svg>
+                    <input type="text" id="course-title" class="form-input" placeholder="e.g. Complete Python for Data Science & Machine Learning" maxlength="80" oninput="updateTitle(this.value)" />
+                  </div>
+                  <div class="form-hint">Write a clear, compelling title. Include the main skill or tool.</div>
+                  <div class="field-error" id="title-error">Course title is required.</div>
+                </div>
+
+                <div class="form-group">
+                  <div class="form-label">Short Description <span class="label-required">*</span> <span class="label-count" id="desc-count">0 / 160</span></div>
+                  <textarea id="course-desc" class="form-textarea" placeholder="What will students learn? Why should they take this course? (shown on explore page)" maxlength="160" style="min-height:70px" oninput="document.getElementById('desc-count').textContent=this.value.length+' / 160'"></textarea>
+                  <div class="field-error" id="desc-error">Short description is required.</div>
+                </div>
+
+                <div class="form-group">
+                  <div class="form-label">Full Description <span class="label-optional">(optional)</span></div>
+                  <textarea id="course-full-desc" class="form-textarea" placeholder="Detailed overview, course objectives, what sets this course apart..." style="min-height:120px"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></div>
+                <div><div class="form-section-title">Category &amp; Level</div><div class="form-section-desc">Help students find your course</div></div>
+              </div>
+              <div class="form-section-body">
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="form-label">Category <span class="label-required">*</span></div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                      <select id="category" class="form-select">
+                        <option value="">Select category...</option>
+                        <option>Web Development</option>
+                        <option>AI &amp; Machine Learning</option>
+                        <option>Data Science</option>
+                        <option>UI/UX Design</option>
+                        <option>Mobile Development</option>
+                        <option>Cloud &amp; DevOps</option>
+                        <option>Cybersecurity</option>
+                        <option>Digital Marketing</option>
+                        <option>Video &amp; Media</option>
+                        <option>Business &amp; Finance</option>
+                      </select>
+                    </div>
+                    <div class="field-error" id="cat-error">Please select a category.</div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-label">Sub-category <span class="label-optional">(optional)</span></div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                      <input type="text" class="form-input" placeholder="e.g. Deep Learning, React, Figma" />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="form-label">Level <span class="label-required">*</span></div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                      <select id="level" class="form-select">
+                        <option value="">Select level...</option>
+                        <option>Beginner</option>
+                        <option>Intermediate</option>
+                        <option>Advanced</option>
+                        <option>All Levels</option>
+                      </select>
+                    </div>
+                    <div class="field-error" id="level-error">Please select a level.</div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-label">Language <span class="label-required">*</span></div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                      <select id="language" class="form-select">
+                        <option>English</option>
+                        <option>Hindi</option>
+                        <option>Gujarati</option>
+                        <option>Tamil</option>
+                        <option>Telugu</option>
+                        <option>Marathi</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+                <div><div class="form-section-title">Tags &amp; Requirements</div><div class="form-section-desc">Improve discoverability</div></div>
+              </div>
+              <div class="form-section-body">
+                <div class="form-group">
+                  <div class="form-label">Tags <span class="label-optional">(up to 8)</span></div>
+                  <div class="tags-input-wrap" id="tags-wrap" onclick="document.getElementById('tag-input').focus()">
+                    <span class="tag-chip">Python <button onclick="removeTag(this)">×</button></span>
+                    <span class="tag-chip">Machine Learning <button onclick="removeTag(this)">×</button></span>
+                    <span class="tag-chip">TensorFlow <button onclick="removeTag(this)">×</button></span>
+                    <input type="text" id="tag-input" class="tags-input" placeholder="Add a tag, press Enter..." onkeydown="addTag(event)" />
+                  </div>
+                  <div class="form-hint">Press Enter to add. Tags help students find your course.</div>
+                </div>
+                <div class="form-group">
+                  <div class="form-label">Prerequisites <span class="label-optional">(optional)</span></div>
+                  <textarea class="form-textarea" placeholder="List any required knowledge or tools students need before starting..." style="min-height:80px"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-nav">
+              <div></div>
+              <button class="btn-step-next" onclick="nextStep(1)">
+                Next: Media &amp; Pricing
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- ══ STEP 2: Media & Pricing ══ -->
+          <div class="step-panel" id="panel-2">
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+                <div><div class="form-section-title">Course Thumbnail</div><div class="form-section-desc">Recommended: 800×450px, 16:9 ratio, JPG or PNG</div></div>
+              </div>
+              <div class="form-section-body">
+                <div class="thumb-upload" id="thumb-drop" onclick="document.getElementById('thumb-file').click()" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="handleDrop(event)">
+                  <input type="file" id="thumb-file" accept="image/jpeg,image/png,image/webp" onchange="previewThumb(this)" />
+                  <div class="thumb-upload-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                  <div class="thumb-upload-title">Drop your thumbnail here</div>
+                  <div class="thumb-upload-sub">Drag &amp; drop or <span>browse files</span><br>JPG, PNG or WebP · Max 5MB · Min 800×450px</div>
+                </div>
+                <!--
+                  Thumbnail preview after upload:
+                  width: 100% of container (~580px)
+                  height: auto (16:9 ratio)
+                  object-fit: cover
+                  Ideal source image: 800×450px minimum
+                -->
+                <div class="thumb-preview" id="thumb-preview">
+                  <img src="" alt="Course thumbnail preview" class="thumb-preview-img" id="thumb-img" />
+                  <div class="thumb-preview-overlay">
+                    <button class="overlay-btn overlay-btn-change" onclick="document.getElementById('thumb-file').click();event.stopPropagation()">Change</button>
+                    <button class="overlay-btn overlay-btn-remove" onclick="removeThumb();event.stopPropagation()">Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <div><div class="form-section-title">Pricing</div><div class="form-section-desc">Set your course price</div></div>
+              </div>
+              <div class="form-section-body">
+                <div class="price-toggle">
+                  <button class="price-toggle-btn" id="pt-free" onclick="setPricing('free')">Free</button>
+                  <button class="price-toggle-btn active" id="pt-paid" onclick="setPricing('paid')">Paid</button>
+                </div>
+                <div id="paid-fields">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <div class="form-label">Price (₹) <span class="label-required">*</span></div>
+                      <div class="input-wrap">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <input type="number" id="price" class="form-input" placeholder="1499" min="0" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <div class="form-label">Original Price (₹) <span class="label-optional">(for strikethrough)</span></div>
+                      <div class="input-wrap">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <input type="number" class="form-input" placeholder="4999" min="0" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div><div class="form-section-title">Course Details</div><div class="form-section-desc">Duration, certificate, access</div></div>
+              </div>
+              <div class="form-section-body">
+                <div class="form-row-3">
+                  <div class="form-group">
+                    <div class="form-label">Est. Duration</div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <input type="text" class="form-input" placeholder="e.g. 12 hours" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-label">No. of Lessons</div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                      <input type="number" class="form-input" placeholder="e.g. 48" min="1" />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-label">Certificate</div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+                      <select class="form-select">
+                        <option>Yes — on completion</option>
+                        <option>No certificate</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-nav">
+              <button class="btn-step-back" onclick="prevStep(2)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                Back
+              </button>
+              <button class="btn-step-next" onclick="nextStep(2)">
+                Next: Curriculum
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- ══ STEP 3: Curriculum ══ -->
+          <div class="step-panel" id="panel-3">
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+                <div><div class="form-section-title">Curriculum Builder</div><div class="form-section-desc">Add sections and lessons. Drag to reorder.</div></div>
+              </div>
+              <div class="form-section-body" style="padding-bottom:10px">
+
+                <!-- Section 1 -->
+                <div class="curriculum-section" id="curr-sec-1">
+                  <div class="curriculum-section-header">
+                    <div class="section-drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+                    <input type="text" class="section-name-input" placeholder="Section title, e.g. Introduction" value="Section 1: Getting Started" />
+                    <span class="section-lesson-count">2 lessons</span>
+                    <button class="btn-section-action" onclick="removeSection('curr-sec-1')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                  </div>
+                  <div class="curriculum-lessons">
+                    <div class="lesson-row">
+                      <div class="lesson-type-dot dot-video"></div>
+                      <input type="text" class="lesson-name-input" placeholder="Lesson title..." value="Welcome &amp; Course Overview" />
+                      <select class="lesson-type-select"><option value="video">Video</option><option value="quiz">Quiz</option><option value="doc">Resource</option></select>
+                      <button class="btn-remove-lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    </div>
+                    <div class="lesson-row">
+                      <div class="lesson-type-dot dot-video"></div>
+                      <input type="text" class="lesson-name-input" placeholder="Lesson title..." value="Setup &amp; Installation" />
+                      <select class="lesson-type-select"><option value="video">Video</option><option value="quiz">Quiz</option><option value="doc">Resource</option></select>
+                      <button class="btn-remove-lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    </div>
+                    <button class="btn-add-lesson" onclick="addLesson('curr-sec-1')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Add Lesson
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="curriculum-section" id="curr-sec-2">
+                  <div class="curriculum-section-header">
+                    <div class="section-drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+                    <input type="text" class="section-name-input" placeholder="Section title..." value="Section 2: Core Concepts" />
+                    <span class="section-lesson-count">3 lessons</span>
+                    <button class="btn-section-action" onclick="removeSection('curr-sec-2')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+                  </div>
+                  <div class="curriculum-lessons">
+                    <div class="lesson-row">
+                      <div class="lesson-type-dot dot-video"></div>
+                      <input type="text" class="lesson-name-input" value="Variables &amp; Data Types" />
+                      <select class="lesson-type-select"><option value="video">Video</option><option value="quiz">Quiz</option><option value="doc">Resource</option></select>
+                      <button class="btn-remove-lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    </div>
+                    <div class="lesson-row">
+                      <div class="lesson-type-dot dot-video"></div>
+                      <input type="text" class="lesson-name-input" value="Control Flow — Loops &amp; Conditions" />
+                      <select class="lesson-type-select"><option value="video">Video</option><option value="quiz">Quiz</option><option value="doc">Resource</option></select>
+                      <button class="btn-remove-lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    </div>
+                    <div class="lesson-row">
+                      <div class="lesson-type-dot dot-quiz"></div>
+                      <input type="text" class="lesson-name-input" value="Knowledge Check Quiz" />
+                      <select class="lesson-type-select"><option value="video">Video</option><option value="quiz" selected>Quiz</option><option value="doc">Resource</option></select>
+                      <button class="btn-remove-lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                    </div>
+                    <button class="btn-add-lesson" onclick="addLesson('curr-sec-2')">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      Add Lesson
+                    </button>
+                  </div>
+                </div>
+
+                <button class="btn-add-section" onclick="addSection()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add New Section
+                </button>
+              </div>
+            </div>
+
+            <div class="step-nav">
+              <button class="btn-step-back" onclick="prevStep(3)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                Back
+              </button>
+              <button class="btn-step-next" onclick="nextStep(3)">
+                Next: Review &amp; Publish
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- ══ STEP 4: Review & Publish ══ -->
+          <div class="step-panel" id="panel-4">
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div><div class="form-section-title">Pre-publish Checklist</div><div class="form-section-desc">Make sure everything is ready</div></div>
+              </div>
+              <div class="form-section-body">
+                <div class="checklist-item">
+                  <svg class="check-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
+                  Course title added
+                </div>
+                <div class="checklist-item">
+                  <svg class="check-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
+                  Short description written
+                </div>
+                <div class="checklist-item">
+                  <svg class="check-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
+                  Category &amp; level selected
+                </div>
+                <div class="checklist-item">
+                  <svg class="check-pending" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span style="color:var(--ink-muted)">Thumbnail uploaded (recommended)</span>
+                </div>
+                <div class="checklist-item">
+                  <svg class="check-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
+                  Pricing set
+                </div>
+                <div class="checklist-item">
+                  <svg class="check-done" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="20 6 9 17 4 12"/></svg>
+                  Curriculum has at least 1 section &amp; 2 lessons
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="form-section-header">
+                <div class="form-section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                <div><div class="form-section-title">Visibility &amp; Scheduling</div><div class="form-section-desc">Control when your course goes live</div></div>
+              </div>
+              <div class="form-section-body">
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="form-label">Visibility</div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <select class="form-select">
+                        <option>Public — visible to everyone</option>
+                        <option>Unlisted — only via direct link</option>
+                        <option>Private — only for you</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-label">Schedule publish <span class="label-optional">(optional)</span></div>
+                    <div class="input-wrap">
+                      <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      <input type="datetime-local" class="form-input" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-nav">
+              <button class="btn-step-back" onclick="prevStep(4)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                Back
+              </button>
+              <button class="btn-step-next" style="background:var(--green);box-shadow:0 4px 14px rgba(34,197,94,.3)" onclick="publishCourse()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+                Publish Course
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /form-main -->
+
+        <!-- ── FORM ASIDE ── -->
+        <div class="form-aside">
+
+          <!-- Live Preview -->
+          <div class="preview-card">
+            <div class="panel-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Live Preview
+            </div>
+            <div class="preview-thumb" id="aside-thumb">
+              <div class="preview-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Thumbnail preview</span>
+              </div>
+            </div>
+            <div class="preview-body">
+              <div class="preview-title" id="preview-title">Your course title will appear here</div>
+              <div class="preview-meta" id="preview-meta">
+                <span>Category</span>
+                <span>·</span>
+                <span>Level</span>
+              </div>
+              <div class="preview-price" id="preview-price">₹1,499</div>
+            </div>
+          </div>
+
+          <!-- Tips -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Tips for a great course
+            </div>
+            <div class="panel-card-body" style="padding-top:12px">
+              <div class="tip-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Keep your title under 60 characters for best display on mobile</span>
+              </div>
+              <div class="tip-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Use a bright, high-contrast thumbnail — it drives 3× more clicks</span>
+              </div>
+              <div class="tip-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Aim for at least 5 sections and 20+ lessons for a comprehensive course</span>
+              </div>
+              <div class="tip-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Price between ₹999–₹1,999 for best conversion on SkillNest</span>
+              </div>
+              <div class="tip-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>Add a short quiz after every 3–4 lessons to boost completion rates</span>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /form-aside -->
+      </div><!-- /form-layout -->
+    </div><!-- /page-inner -->
+  </main>
+
+  <script>
+    let currentStep = 1;
+    const totalSteps = 4;
+    const checkSVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg>`;
+    let sectionCount = 2;
+
+    // ── Step navigation ──
+    function goToStep(n) {
+      // deactivate current
+      document.getElementById('step-tab-'+currentStep).classList.remove('active');
+      document.getElementById('panel-'+currentStep).classList.remove('active');
+      // activate target
+      currentStep = n;
+      document.getElementById('step-tab-'+n).classList.add('active');
+      document.getElementById('panel-'+n).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextStep(from) {
+      if (from < totalSteps) {
+        // mark done
+        document.getElementById('step-tab-'+from).classList.remove('active');
+        document.getElementById('step-tab-'+from).classList.add('done');
+        document.getElementById('sc-'+from).innerHTML = checkSVG;
+        if (from < totalSteps) document.getElementById('conn-'+from).classList.add('done');
+        goToStep(from + 1);
+      }
+    }
+
+    function prevStep(from) {
+      if (from > 1) {
+        document.getElementById('step-tab-'+from).classList.remove('active');
+        goToStep(from - 1);
+      }
+    }
+
+    // ── Live preview ──
+    function updateTitle(val) {
+      document.getElementById('title-count').textContent = val.length + ' / 80';
+      document.getElementById('preview-title').textContent = val || 'Your course title will appear here';
+    }
+
+    document.getElementById('category').addEventListener('change', updatePreviewMeta);
+    document.getElementById('level').addEventListener('change', updatePreviewMeta);
+
+    function updatePreviewMeta() {
+      const cat = document.getElementById('category').value || 'Category';
+      const lvl = document.getElementById('level').value || 'Level';
+      document.getElementById('preview-meta').innerHTML = `<span>${cat}</span><span>·</span><span>${lvl}</span>`;
+    }
+
+    // ── Pricing toggle ──
+    function setPricing(type) {
+      document.getElementById('pt-free').classList.toggle('active', type === 'free');
+      document.getElementById('pt-paid').classList.toggle('active', type === 'paid');
+      document.getElementById('paid-fields').style.display = type === 'free' ? 'none' : 'block';
+      document.getElementById('preview-price').textContent = type === 'free' ? 'Free' : '₹1,499';
+      document.getElementById('preview-price').className = type === 'free' ? 'preview-price free' : 'preview-price';
+    }
+
+    // ── Thumbnail upload ──
+    function previewThumb(input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+      const url  = URL.createObjectURL(file);
+      showThumbPreview(url);
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('thumb-drop').classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const url = URL.createObjectURL(file);
+        showThumbPreview(url);
+      }
+    }
+
+    function showThumbPreview(url) {
+      document.getElementById('thumb-drop').style.display = 'none';
+      const prev = document.getElementById('thumb-preview');
+      prev.style.display = 'block';
+      document.getElementById('thumb-img').src = url;
+      // update aside preview
+      const asideThumb = document.getElementById('aside-thumb');
+      asideThumb.innerHTML = `<img src="${url}" alt="Preview" style="width:100%;height:100%;object-fit:cover;display:block;" />`;
+    }
+
+    function removeThumb() {
+      document.getElementById('thumb-preview').style.display = 'none';
+      document.getElementById('thumb-drop').style.display = 'block';
+      document.getElementById('thumb-file').value = '';
+      document.getElementById('thumb-img').src = '';
+      document.getElementById('aside-thumb').innerHTML = `
+        <div class="preview-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <span>Thumbnail preview</span>
+        </div>`;
+    }
+
+    // ── Tags ──
+    function addTag(e) {
+      if (e.key !== 'Enter') return;
+      const input = document.getElementById('tag-input');
+      const val = input.value.trim();
+      if (!val) return;
+      const tags = document.querySelectorAll('.tag-chip');
+      if (tags.length >= 8) { input.value = ''; return; }
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      chip.innerHTML = `${val} <button onclick="removeTag(this)">×</button>`;
+      document.getElementById('tags-wrap').insertBefore(chip, input);
+      input.value = '';
+    }
+
+    function removeTag(btn) {
+      btn.parentElement.remove();
+    }
+
+    // ── Curriculum ──
+    let lessonCounts = { 'curr-sec-1': 2, 'curr-sec-2': 3 };
+
+    function addLesson(sectionId) {
+      const sec = document.getElementById(sectionId);
+      const lessons = sec.querySelector('.curriculum-lessons');
+      const addBtn  = sec.querySelector('.btn-add-lesson');
+      const row = document.createElement('div');
+      row.className = 'lesson-row';
+      row.innerHTML = `
+        <div class="lesson-type-dot dot-video"></div>
+        <input type="text" class="lesson-name-input" placeholder="New lesson title..." />
+        <select class="lesson-type-select" onchange="updateDot(this)">
+          <option value="video">Video</option>
+          <option value="quiz">Quiz</option>
+          <option value="doc">Resource</option>
+        </select>
+        <button class="btn-remove-lesson" onclick="this.parentElement.remove();updateLessonCount('${sectionId}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>`;
+      lessons.insertBefore(row, addBtn);
+      updateLessonCount(sectionId);
+      row.querySelector('input').focus();
+    }
+
+    function removeSection(id) {
+      if (document.querySelectorAll('.curriculum-section').length <= 1) return;
+      document.getElementById(id).remove();
+    }
+
+    function updateLessonCount(sectionId) {
+      const sec   = document.getElementById(sectionId);
+      const count = sec.querySelectorAll('.lesson-row').length;
+      sec.querySelector('.section-lesson-count').textContent = count + ' lesson' + (count !== 1 ? 's' : '');
+    }
+
+    function updateDot(select) {
+      const dot = select.parentElement.querySelector('.lesson-type-dot');
+      dot.className = 'lesson-type-dot';
+      if (select.value === 'video') dot.classList.add('dot-video');
+      if (select.value === 'quiz')  dot.classList.add('dot-quiz');
+      if (select.value === 'doc')   dot.classList.add('dot-doc');
+    }
+
+    function addSection() {
+      sectionCount++;
+      const id  = 'curr-sec-' + sectionCount;
+      const div = document.createElement('div');
+      div.className = 'curriculum-section';
+      div.id = id;
+      div.innerHTML = `
+        <div class="curriculum-section-header">
+          <div class="section-drag-handle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg></div>
+          <input type="text" class="section-name-input" placeholder="Section title..." value="Section ${sectionCount}: " />
+          <span class="section-lesson-count">0 lessons</span>
+          <button class="btn-section-action" onclick="removeSection('${id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+        </div>
+        <div class="curriculum-lessons">
+          <button class="btn-add-lesson" onclick="addLesson('${id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Lesson
+          </button>
+        </div>`;
+      const addSectionBtn = document.querySelector('.btn-add-section');
+      addSectionBtn.parentElement.insertBefore(div, addSectionBtn);
+      div.querySelector('.section-name-input').focus();
+      // auto-add first lesson
+      addLesson(id);
+    }
+
+    // ── Save draft / Publish ──
+    function saveDraft() {
+      const btn = document.querySelector('.btn-save-draft');
+      btn.textContent = 'Draft Saved!';
+      btn.style.color = 'var(--green)';
+      btn.style.borderColor = 'var(--green)';
+      setTimeout(() => { btn.textContent = 'Save Draft'; btn.style.color = ''; btn.style.borderColor = ''; }, 2000);
+    }
+
+    function publishCourse() {
+      const title = document.getElementById('course-title').value.trim();
+      if (!title) { goToStep(1); alert('Please add a course title before publishing.'); return; }
+      if (confirm('Publish "' + title + '" now?')) {
+        window.location.href = 'dashboard.html';
+      }
+    }
+  </script>
+</body>
+</html>
